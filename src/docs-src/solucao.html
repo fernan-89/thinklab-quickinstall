@@ -1,0 +1,72 @@
+<section lang="pt">
+<h1>Solução de problemas</h1>
+<h2>O menu não aparece ou volta direto para o sistema</h2>
+<ul>
+  <li>Abra o menu de boot da máquina (em muitos Lenovo, <code>F12</code>) e escolha o pen-drive pelo nome; no UEFI procure a entrada "UEFI: ... USB".</li>
+  <li>Com Secure Boot ligado, aceite a chave do Ventoy na tela azul "Enroll MOK" (<a href="instalar.html">Passo a passo</a>) ou desligue o Secure Boot.</li>
+</ul>
+<h2>Só aparece uma pasta ou poucas ISOs</h2>
+<ul>
+  <li>O menu usa a visão em árvore: entre nas pastas <i>Windows</i>, <i>Linux</i> e <i>Recovery</i>. <code>F3</code> alterna para a lista completa.</li>
+  <li>O arquivo <code>ventoy\ventoy.json</code> não pode ter <code>VTOY_MENU_TIMEOUT</code> igual a <code>0</code>: isso faz o Ventoy iniciar a primeira ISO sozinho (foi a causa do problema "só Linux").</li>
+</ul>
+<h2>Clonezilla ou GParted Live param em "Waiting for single CPU status"</h2>
+<ul>
+  <li>Aparece em máquinas virtuais Hyper-V com mais de um processador. Em máquina real isso não ocorre; numa VM use 1 vCPU para essas duas ferramentas.</li>
+</ul>
+<h2>O instalador do Windows não acha o disco</h2>
+<ul>
+  <li>Máquinas com Intel VMD/RST: carregue o driver de armazenamento ("Carregar driver") ou mude o modo na BIOS.</li>
+</ul>
+<h2>O Windows 11 recusa a instalação</h2>
+<ul>
+  <li>Ligue o TPM 2.0 (fTPM em máquinas AMD) e o Secure Boot na BIOS.</li>
+  <li>CPUs fora da lista oficial do Windows 11 podem recusar a instalação; verifique antes.</li>
+</ul>
+<h2>O pós-instalação não rodou ou parou</h2>
+<ul>
+  <li>Veja o log em <code>C:\QuickInstall</code>. O script segue para o próximo item quando um falha.</li>
+  <li>Mantenha o pen-drive plugado: o script procura o volume <code>Ventoy</code>.</li>
+  <li>Reader e Firefox Developer dependem de internet quando o instalador local não está no kit; o <code>winget</code> pode não existir no Windows 10 recém-instalado.</li>
+</ul>
+<h2>Office em inglês nos kits em português</h2>
+<ul>
+  <li>Confirme que a pasta <code>Office\pt-BR\Office-Retail-CurrentChannel_...</code> e o arquivo <code>Office\_ODT\setup.exe</code> estão no pen-drive.</li>
+</ul>
+</section>
+<section lang="en">
+<h1>Troubleshooting</h1>
+<h2>The menu does not show up or goes straight to the system</h2>
+<ul>
+  <li>Open the machine's boot menu (on many Lenovo, <code>F12</code>) and pick the stick by name; on UEFI look for the "UEFI: ... USB" entry.</li>
+  <li>With Secure Boot on, accept the Ventoy key on the blue "Enroll MOK" screen (<a href="instalar.html">Step by step</a>) or turn Secure Boot off.</li>
+</ul>
+<h2>Only one folder or a few ISOs show</h2>
+<ul>
+  <li>The menu uses the tree view: open the <i>Windows</i>, <i>Linux</i> and <i>Recovery</i> folders. <code>F3</code> switches to the full list.</li>
+  <li><code>ventoy\ventoy.json</code> must not have <code>VTOY_MENU_TIMEOUT</code> set to <code>0</code>: that makes Ventoy start the first ISO by itself (this was the cause of the "Linux only" problem).</li>
+</ul>
+<h2>Clonezilla or GParted Live stop at "Waiting for single CPU status"</h2>
+<ul>
+  <li>This shows up in Hyper-V virtual machines with more than one processor. It does not happen on real hardware; in a VM use 1 vCPU for these two tools.</li>
+</ul>
+<h2>Windows Setup cannot find the disk</h2>
+<ul>
+  <li>Machines with Intel VMD/RST: load the storage driver ("Load driver") or change the mode in the BIOS.</li>
+</ul>
+<h2>Windows 11 refuses to install</h2>
+<ul>
+  <li>Turn on TPM 2.0 (fTPM on AMD machines) and Secure Boot in the BIOS.</li>
+  <li>CPUs outside the official Windows 11 list may refuse to install; check beforehand.</li>
+</ul>
+<h2>Post-install did not run or stopped</h2>
+<ul>
+  <li>Read the log in <code>C:\QuickInstall</code>. The script moves on to the next item when one fails.</li>
+  <li>Keep the stick plugged in: the script looks for the <code>Ventoy</code> volume.</li>
+  <li>Reader and Firefox Developer need internet when the local installer is not in the kit; <code>winget</code> may not exist on a fresh Windows 10.</li>
+</ul>
+<h2>Office is in English on the Portuguese kits</h2>
+<ul>
+  <li>Check that the folder <code>Office\pt-BR\Office-Retail-CurrentChannel_...</code> and the file <code>Office\_ODT\setup.exe</code> are on the stick.</li>
+</ul>
+</section>

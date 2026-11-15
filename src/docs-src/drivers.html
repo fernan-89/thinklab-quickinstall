@@ -1,0 +1,14 @@
+<section lang="pt">
+<h1>Drivers</h1>
+<p class="lead">Os pacotes ficam em <code>Drivers\</code> no pen-drive e são instalados com <code>pnputil</code> no primeiro logon. O Windows Update completa o que faltar.</p>
+{{DRIVERS_TABLE}}
+<div class="note"><b>Se o disco não aparecer no instalador</b>Em máquinas com Intel VMD/RST o Windows Setup pode não ver o NVMe. Use "Carregar driver" e aponte para a pasta de drivers de armazenamento do fabricante, ou mude o modo de armazenamento na BIOS.</div>
+<div class="note ok"><b>Para exportar do que já está instalado</b>Na máquina real: <code>pnputil /export-driver * C:\Drivers</code> (como administrador) gera um pacote exato dos drivers atuais.</div>
+</section>
+<section lang="en">
+<h1>Drivers</h1>
+<p class="lead">Packs live in <code>Drivers\</code> on the stick and are installed with <code>pnputil</code> at the first logon. Windows Update fills in whatever is missing.</p>
+{{DRIVERS_TABLE}}
+<div class="note"><b>If the disk does not show up in Setup</b>On machines with Intel VMD/RST, Windows Setup may not see the NVMe. Use "Load driver" and point to the vendor's storage driver folder, or change the storage mode in the BIOS.</div>
+<div class="note ok"><b>To export what is already installed</b>On the real machine: <code>pnputil /export-driver * C:\Drivers</code> (as administrator) produces an exact pack of the current drivers.</div>
+</section>

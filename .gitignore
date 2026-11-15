@@ -1,0 +1,13 @@
+# local, private data (never commit)
+config/site.json
+config/privacy-terms.local.txt
+build/
+library/
+*.iso
+*.img
+*.vhd
+*.vhdx
+*.wim
+*.zip
+*.log
+.vscode/

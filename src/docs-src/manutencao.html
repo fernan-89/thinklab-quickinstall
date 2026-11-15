@@ -1,0 +1,34 @@
+<section lang="pt">
+<h1>Manutenção</h1>
+<p class="lead">Como atualizar ou refazer o pen-drive. As ferramentas ficam na máquina de montagem, no repositório.</p>
+<h2>Estrutura do pen-drive</h2>
+<div class="tablewrap"><table><thead><tr><th>Pasta</th><th>Conteúdo</th></tr></thead><tbody>
+<tr><td><code>ISO\</code></td><td>Imagens do menu, em pastas por grupo (Windows, Linux, Recovery).</td></tr>
+<tr><td><code>Office\</code></td><td>Ferramenta de implantação e a origem bilíngue do Office.</td></tr>
+<tr><td><code>Software\</code></td><td>Instaladores dos programas.</td></tr>
+<tr><td><code>Drivers\</code></td><td>Pacotes de drivers por máquina.</td></tr>
+<tr><td><code>Unattend\</code></td><td>Arquivos de resposta: XML (Windows), kickstart (AlmaLinux) e YAML (Ubuntu).</td></tr>
+<tr><td><code>Scripts\</code></td><td><code>FirstLogon.ps1</code>, o pós-instalação do Windows.</td></tr>
+<tr><td><code>ventoy\</code></td><td><code>ventoy.json</code> (menu, apelidos, modelos) e o tema ThinkLab.</td></tr>
+<tr><td><code>Docs\</code></td><td>Esta documentação.</td></tr>
+</tbody></table></div>
+<h2>Rotinas</h2><ul><li><b>Montar tudo (modelos, menu, tema, documentação, scripts):</b> <code>src\tools\New-Kit.ps1</code>.</li><li><b>Publicar no pen-drive:</b> <code>src\tools\Publish-Stick.ps1</code> (confere se o volume se chama Ventoy).</li><li><b>Baixar ISOs de resgate:</b> <code>src\tools\Get-RescueIsos.ps1</code> (confere os checksums publicados).</li><li><b>Conferir o pen-drive:</b> <code>Scripts\Verify-Stick.ps1</code> compara tudo com o <code>SHA256SUMS.txt</code>.</li><li><b>Testar sem máquina real:</b> <code>src\tools\Test-StickImageInHyperV.ps1</code> copia o pen-drive para um disco virtual e sobe uma VM.</li></ul>
+<div class="note warn"><b>Regra do menu</b>Nunca use <code>VTOY_MENU_TIMEOUT = 0</code> no <code>ventoy.json</code>. Alterar nomes de ISO exige ajustar o <code>ventoy.json</code>.</div>
+</section>
+<section lang="en">
+<h1>Maintenance</h1>
+<p class="lead">How to update or rebuild the stick. The tools live on the build machine, in the repository.</p>
+<h2>Stick layout</h2>
+<div class="tablewrap"><table><thead><tr><th>Folder</th><th>Contents</th></tr></thead><tbody>
+<tr><td><code>ISO\</code></td><td>Menu images, in group folders (Windows, Linux, Recovery).</td></tr>
+<tr><td><code>Office\</code></td><td>Deployment tool and the bilingual Office source.</td></tr>
+<tr><td><code>Software\</code></td><td>Program installers.</td></tr>
+<tr><td><code>Drivers\</code></td><td>Driver packs per machine.</td></tr>
+<tr><td><code>Unattend\</code></td><td>Answer files: XML (Windows), kickstart (AlmaLinux) and YAML (Ubuntu).</td></tr>
+<tr><td><code>Scripts\</code></td><td><code>FirstLogon.ps1</code>, the Windows post-install.</td></tr>
+<tr><td><code>ventoy\</code></td><td><code>ventoy.json</code> (menu, aliases, templates) and the ThinkLab theme.</td></tr>
+<tr><td><code>Docs\</code></td><td>This documentation.</td></tr>
+</tbody></table></div>
+<h2>Routines</h2><ul><li><b>Build everything (templates, menu, theme, docs, scripts):</b> <code>src\tools\New-Kit.ps1</code>.</li><li><b>Publish to the stick:</b> <code>src\tools\Publish-Stick.ps1</code> (checks the volume is called Ventoy).</li><li><b>Download rescue ISOs:</b> <code>src\tools\Get-RescueIsos.ps1</code> (checks the published checksums).</li><li><b>Verify the stick:</b> <code>Scripts\Verify-Stick.ps1</code> compares everything with <code>SHA256SUMS.txt</code>.</li><li><b>Test without a real machine:</b> <code>src\tools\Test-StickImageInHyperV.ps1</code> copies the stick to a virtual disk and starts a VM.</li></ul>
+<div class="note warn"><b>Menu rule</b>Never use <code>VTOY_MENU_TIMEOUT = 0</code> in <code>ventoy.json</code>. Renaming ISOs requires updating <code>ventoy.json</code>.</div>
+</section>

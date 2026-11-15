@@ -1,0 +1,3 @@
+#!/bin/sh
+# runs the repo checks before every commit (enable once: git config core.hooksPath .githooks)
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tests/Test-Repo.ps1 -SkipBuild || exit 1

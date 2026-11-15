@@ -1,0 +1,46 @@
+{
+  "_comment": "Public catalog: what the kit can install. Contains no site/machine data (that lives in config/site.json, which is git-ignored).",
+  "genericKeys": {
+    "_comment": "Microsoft's published generic INSTALL keys. They only skip the product-key page; they do not activate Windows.",
+    "Pro": "W269N-WFGWX-YVC9B-4J6C9-T83GX",
+    "ProWS": "NRG8B-VKK3Q-CXVCJ-9G2XF-6Q84J",
+    "LTSC": "M7XTQ-FN8P6-TTKYV-9D4CC-J462D",
+    "EntIoT": "NPPR9-FWDCX-D2C8J-H872K-2YT43",
+    "Std2019": "N69G4-B89J2-4G8F4-WWYCC-J464C"
+  },
+  "windows": [
+    { "os": "W10", "lang": "EN", "iso": "Windows10_BusinessEditions-UpdatedOct2025_x64_22H2-19045.6456_en-US.iso", "label": "Windows 10 22H2 Business - ENGLISH (EN-US)", "class": "win10", "office": "2021", "fileLabel": "Win10",
+      "editions": { "Pro": { "image": "Windows 10 Pro", "key": "Pro", "fileLabel": "Pro" }, "ProWS": { "image": "Windows 10 Pro for Workstations", "key": "ProWS", "fileLabel": "ProWorkstations" } } },
+    { "os": "W10", "lang": "PT", "iso": "Windows10_BusinessEditions-UpdatedOct2025_x64_22H2-19045.6456_pt-BR.iso", "label": "Windows 10 22H2 Business - PORTUGUES (PT-BR)", "class": "win10", "office": "2021", "fileLabel": "Win10",
+      "editions": { "Pro": { "image": "Windows 10 Pro", "key": "Pro", "fileLabel": "Pro" }, "ProWS": { "image": "Windows 10 Pro for Workstations", "key": "ProWS", "fileLabel": "ProWorkstations" } } },
+    { "os": "W11", "lang": "EN", "iso": "Windows11_BusinessEditions_x64_26H2-26300.9457_en-US.iso", "label": "Windows 11 26H2 Business - ENGLISH (EN-US)", "class": "win11", "office": "2024", "fileLabel": "Win11",
+      "editions": { "Pro": { "image": "Windows 11 Pro", "key": "Pro", "fileLabel": "Pro" }, "ProWS": { "image": "Windows 11 Pro for Workstations", "key": "ProWS", "fileLabel": "ProWorkstations" } } },
+    { "os": "W11", "lang": "PT", "iso": "Windows11_BusinessEditions_x64_26H2-26300.9457_pt-BR.iso", "label": "Windows 11 26H2 Business - PORTUGUES (PT-BR)", "class": "win11", "office": "2024", "fileLabel": "Win11",
+      "editions": { "Pro": { "image": "Windows 11 Pro", "key": "Pro", "fileLabel": "Pro" }, "ProWS": { "image": "Windows 11 Pro for Workstations", "key": "ProWS", "fileLabel": "ProWorkstations" } } },
+    { "os": "L21", "lang": "PT", "iso": "Windows10_EnterpriseLTSC2021_x64_21H2-19041.1288_pt-BR.iso", "label": "Windows 10 LTSC 2021 (leve) - PORTUGUES (PT-BR)", "class": "winlite", "office": "2021", "fileLabel": "Win10-EnterpriseLTSC2021",
+      "editions": { "Default": { "image": "Windows 10 Enterprise LTSC 2021", "key": "LTSC" } } },
+    { "os": "I10", "lang": "EN", "iso": "Windows10_IoTEnterprise_x64_22H2-19041.2006_en-US.iso", "label": "Windows 10 IoT Enterprise 22H2 (leve) - ENGLISH (EN-US)", "class": "winlite", "office": "2021", "fileLabel": "Win10-IoTEnterprise-22H2",
+      "editions": { "Default": { "image": "Windows 10 IoT Enterprise", "key": "EntIoT" } } },
+    { "os": "L24", "lang": "PT", "iso": "Windows11_EnterpriseLTSC2024_x64_24H2-26100.1742_pt-BR.iso", "label": "Windows 11 LTSC 2024 (leve) - PORTUGUES (PT-BR)", "class": "winlite", "office": "2024", "fileLabel": "Win11-EnterpriseLTSC2024",
+      "editions": { "Default": { "image": "Windows 11 Enterprise LTSC 2024", "key": "LTSC" } } },
+    { "os": "S19", "lang": "EN", "iso": "WindowsServer2019_Standard-Datacenter_x64_1809-17763.3650_en-US.iso", "label": "Windows Server 2019 - ENGLISH (EN-US)", "class": "winsrv", "office": null, "fileLabel": "WinServer2019-Standard-DesktopExperience",
+      "editions": { "Default": { "image": "Windows Server 2019 SERVERSTANDARD", "key": "Std2019" } } }
+  ],
+  "linux": [
+    { "id": "alma", "iso": "AlmaLinux_DVD_x64_10.2_Multi.iso", "label": "AlmaLinux 10.2 (Red Hat livre) - Desktop e Server", "aliasSuffix": "EN e PT-BR", "class": "alma", "tag": "AlmaLinux-10.2", "hostCode": "a10", "templates": "kickstart" },
+    { "id": "opensuse", "iso": "openSUSE-Leap_OfflineInstaller_x64_16.1_Multi.iso", "label": "openSUSE Leap 16.1 (SUSE livre) - Desktop e Server", "allMachines": true, "aliasSuffix": "instalador Agama (interativo)", "class": "suse", "templates": "none" },
+    { "id": "ubuntu", "iso": "UbuntuServer_LiveInstaller_x64_26.04.1-LTS_Multi.iso", "label": "Ubuntu Server 26.04.1 LTS - ENGLISH", "aliasSuffix": "Servidor Linux", "class": "ubuntu", "tag": "UbuntuServer-26.04.1-LTS", "hostCode": "u26", "templates": "autoinstall" }
+  ],
+  "recovery": [
+    { "iso": "HirensBootCD-PE_x64_20240305_Multi.iso", "label": "Hiren's BootCD PE - Windows Live (WinPE) com ferramentas de recuperacao", "class": "pe", "inject": true },
+    { "iso": "SystemRescue_x64_13.03_Multi.iso", "label": "SystemRescue 13.03 - Linux de resgate (discos, dados, rede)", "class": "rescue" },
+    { "iso": "GParted-Live_x64_1.8.1-3_Multi.iso", "label": "GParted Live 1.8.1 - particionamento grafico", "class": "rescue" },
+    { "iso": "Clonezilla-Live_x64_3.3.3-37_Multi.iso", "label": "Clonezilla Live 3.3.3 - imagem e clonagem de discos", "class": "rescue" },
+    { "iso": "MemTest86Plus_x64_9.00_Multi.iso", "label": "MemTest86+ 9.00 - teste de memoria RAM", "class": "memtest" }
+  ],
+  "office": {
+    "2021": [ "ProPlus2021Retail", "VisioPro2021Retail", "ProjectPro2021Retail", "Publisher2021Retail" ],
+    "2024": [ "ProPlus2024Retail", "VisioPro2024Retail", "ProjectPro2024Retail" ]
+  },
+  "folders": { "windows": "1-Windows", "linux": "2-Linux", "recovery": "3-Recovery" }
+}

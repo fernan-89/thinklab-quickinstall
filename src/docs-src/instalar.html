@@ -1,0 +1,28 @@
+<section lang="pt">
+<h1>Passo a passo</h1>
+<p class="lead">Da máquina desligada ao sistema pronto.</p>
+<ol class="steps">
+  <li><b>Plugue o pen-drive</b> e ligue a máquina. Use a tecla do menu de boot da máquina (em muitos Lenovo, <code>F12</code>) para abrir o menu de boot e escolha o pen-drive (UEFI ou Legacy; o menu é o mesmo).</li>
+  <li><b>No menu do Ventoy</b>, entre em <i>Windows</i> e escolha a ISO (por exemplo "Windows 11 26H2 - PORTUGUES"). Na pergunta de modo, escolha <i>Boot in normal mode</i>.</li>
+  <li><b>Escolha o modelo da sua máquina</b> na lista (<code>/Unattend/&lt;MÁQUINA&gt;_...</code>, ou <code>BASE_...</code> para qualquer máquina). Para instalação limpa, escolha <i>Boot without auto installation template</i>.</li>
+  <li><b>Escolha o disco.</b> O instalador já definiu idioma, teclado, edição e chave genérica; só pergunta onde instalar. Escolha o disco da máquina e nunca as partições <code>Ventoy</code> ou <code>VTOYEFI</code>.</li>
+  <li><b>Aguarde.</b> Depois do primeiro logon (usuário <code>{{ADMIN_USER}}</code>) o script <code>FirstLogon.ps1</code> roda sozinho: instala drivers, Office e programas. Deixe o pen-drive plugado até o fim.</li>
+  <li><b>Reinicie</b> quando a janela terminar (Docker, WSL e drivers pedem reinício) e troque a senha padrão.</li>
+</ol>
+<div class="note"><b>Onde ficam os registros</b><code>C:\QuickInstall</code> guarda o log do script e as configurações do Office que foram usadas.</div>
+<div class="note warn"><b>Secure Boot</b>Na primeira vez em cada máquina, com Secure Boot ligado, o Ventoy mostra uma tela azul "Enroll MOK": escolha <i>Enroll key from disk</i> e o arquivo <code>ENROLL_THIS_KEY_IN_MOKMANAGER.cer</code>. Sem isso o boot é recusado.</div>
+</section>
+<section lang="en">
+<h1>Step by step</h1>
+<p class="lead">From a powered-off machine to a finished system.</p>
+<ol class="steps">
+  <li><b>Plug the stick</b> and power on. Press the machine's boot-menu key (on many Lenovo, <code>F12</code>) for the boot menu and pick the stick (UEFI or Legacy; the menu is the same).</li>
+  <li><b>In the Ventoy menu</b> open <i>Windows</i> and pick the ISO (for example "Windows 11 26H2 - ENGLISH"). At the mode question choose <i>Boot in normal mode</i>.</li>
+  <li><b>Pick your machine's template</b> from the list (<code>/Unattend/&lt;MACHINE&gt;_...</code>, or <code>BASE_...</code> for any machine). For a clean install pick <i>Boot without auto installation template</i>.</li>
+  <li><b>Choose the disk.</b> Setup already knows language, keyboard, edition and the generic key; it only asks where to install. Choose the machine's disk and never the <code>Ventoy</code> or <code>VTOYEFI</code> partitions.</li>
+  <li><b>Wait.</b> After the first logon (user <code>{{ADMIN_USER}}</code>) the <code>FirstLogon.ps1</code> script runs by itself: drivers, Office and programs. Keep the stick plugged in until it ends.</li>
+  <li><b>Reboot</b> when the window finishes (Docker, WSL and drivers need it) and change the default password.</li>
+</ol>
+<div class="note"><b>Where the logs are</b><code>C:\QuickInstall</code> holds the script log and the Office configurations that were used.</div>
+<div class="note warn"><b>Secure Boot</b>The first time on each machine, with Secure Boot on, Ventoy shows a blue "Enroll MOK" screen: choose <i>Enroll key from disk</i> and the file <code>ENROLL_THIS_KEY_IN_MOKMANAGER.cer</code>. Without it the boot is refused.</div>
+</section>

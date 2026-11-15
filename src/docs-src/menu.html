@@ -1,0 +1,32 @@
+<section lang="pt">
+<h1>Menu de boot</h1>
+<p class="lead">O menu do Ventoy é organizado em três pastas: instalação de Windows, instalação de Linux e recuperação.</p>
+<p>A lista abaixo é gerada a partir do <code>ventoy.json</code> do pen-drive. Dentro de cada pasta o Ventoy ordena por nome de arquivo.</p>
+{{MENU_TABLE}}
+<h2>Teclas úteis</h2>
+<ul>
+  <li><code>F1</code> ajuda, <code>F2</code> navegar em arquivos, <code>F3</code> alternar lista/árvore, <code>F4</code> boot do disco local, <code>F5</code> ferramentas, <code>F6</code> menu estendido.</li>
+  <li>Em ISOs do Windows, <i>Boot in wimboot mode</i> é uma alternativa se o modo normal falhar.</li>
+</ul>
+<h2>Como funcionam os modelos</h2>
+<p>Cada ISO de instalação mostra uma lista de modelos (<code>/Unattend/...</code>). O modelo define idioma, teclado, edição, nome do computador e o perfil de programas. A primeira opção da lista, <i>Boot without auto installation template</i>, abre o instalador normal, sem automação.</p>
+<h2>Opção Base</h2>
+<p>Além dos modelos por máquina, cada ISO de instalação tem um modelo <code>BASE_...</code>: instala <b>somente aquela versão do Windows e o Office correspondente</b> (2021 no Windows 10, IoT e LTSC 2021; 2024 no Windows 11 e LTSC 2024), sem drivers, sem programas adicionais e sem nome de computador fixo (o Windows escolhe um). No Windows Server 2019 a base é só o sistema.</p>
+<p>No Linux, os modelos <code>BASE_...</code> servem a qualquer máquina: AlmaLinux Workstation e Server em inglês e português, e Ubuntu Server em inglês. O openSUSE já é genérico por natureza.</p>
+</section>
+<section lang="en">
+<h1>Boot menu</h1>
+<p class="lead">The Ventoy menu is organised in three folders: Windows install, Linux install and recovery.</p>
+<p>The list below is generated from the stick's <code>ventoy.json</code>. Inside each folder Ventoy sorts by file name.</p>
+{{MENU_TABLE}}
+<h2>Useful keys</h2>
+<ul>
+  <li><code>F1</code> help, <code>F2</code> browse files, <code>F3</code> switch list/tree, <code>F4</code> boot the local disk, <code>F5</code> tools, <code>F6</code> extended menu.</li>
+  <li>On Windows ISOs, <i>Boot in wimboot mode</i> is an alternative if normal mode fails.</li>
+</ul>
+<h2>How the templates work</h2>
+<p>Each install ISO shows a list of templates (<code>/Unattend/...</code>). The template sets language, keyboard, edition, computer name and the software profile. The first entry, <i>Boot without auto installation template</i>, opens the regular installer with no automation.</p>
+<h2>Base option</h2>
+<p>Besides the per-machine templates, every install ISO has a <code>BASE_...</code> template: it installs <b>only that Windows version and its matching Office</b> (2021 on Windows 10, IoT and LTSC 2021; 2024 on Windows 11 and LTSC 2024), with no drivers, no extra programs and no fixed computer name (Windows picks one). On Windows Server 2019 the base is the system alone.</p>
+<p>On Linux, the <code>BASE_...</code> templates fit any machine: AlmaLinux Workstation and Server in English and Portuguese, and Ubuntu Server in English. openSUSE is generic by nature.</p>
+</section>
