@@ -9,7 +9,7 @@
     { "id": "reader",   "name": "Adobe Acrobat Reader",      "filter": "Adobe_Acrobat-Reader-Downloader_*.exe", "args": "/sAll /rs /rps /msi EULA_ACCEPT=YES", "minutes": 8, "killOnTimeout": true,
       "winget": "Adobe.Acrobat.Reader.64-bit", "wingetLocale": "pt-BR", "preferWingetFor": [ "PT" ] },
     { "id": "firefoxdev", "name": "Firefox Developer Edition", "filter": "Mozilla_Firefox-DeveloperEdition_x64_latest-*_{LANGTAG}.exe", "args": "/S", "minutes": 10, "winget": "Mozilla.Firefox.DeveloperEdition" },
-    { "id": "terminal", "name": "Windows Terminal",          "winget": "Microsoft.WindowsTerminal" },
+    { "id": "terminal", "name": "Windows Terminal",          "filter": "Microsoft_Windows-Terminal_x64_*.msixbundle", "kind": "appx", "winget": "Microsoft.WindowsTerminal" },
     { "id": "ps7",      "name": "PowerShell 7",              "kind": "zip", "filter": "Microsoft_PowerShell_x64_*_Multi.zip", "extractTo": "%ProgramFiles%\\PowerShell\\7", "addToPath": true, "winget": "Microsoft.PowerShell" },
     { "id": "jdk",      "name": "Oracle JDK",                "filter": "Oracle_JDK_x64_*_Multi.exe", "args": "/s", "minutes": 15 },
     { "id": "node",     "name": "Node.js",                   "kind": "msi", "filter": "OpenJS_Node.js_x64_*_Multi.msi" },

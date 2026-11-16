@@ -113,6 +113,10 @@ function Install-Item($it) {
   $args_ = if ($it.PSObject.Properties.Name -contains 'args') { $it.args } else { '' }
   switch ($kind) {
     'msi' { [void](Run 'msiexec.exe' "/i `"$($file.FullName)`" /qn /norestart" 20) }
+    'appx' {
+      try { Add-AppxPackage -Path $file.FullName -ForceUpdateFromAnyVersion -ErrorAction Stop; Write-Host "installed $($file.Name)" }
+      catch { Write-Warning "appx install failed ($($_.Exception.Message))"; if ($wg) { [void](Winget $wg $null) } }
+    }
     'zip' {
       try {
         $dst = [Environment]::ExpandEnvironmentVariables($it.extractTo); New-Item -ItemType Directory -Force $dst | Out-Null
