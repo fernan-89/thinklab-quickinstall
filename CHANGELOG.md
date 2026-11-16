@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.0] - 2026-11-16
+
+* Boot menu redesign: two themes (`thinklab-dark`, default, and `thinklab-light`; switch with F5 > Theme Select), palette from `config/design.json`, halftone background, numbered sections, isometric motif.
+* The menu is set in IBM Plex Mono: `Build-Theme.ps1` converts the bundled fonts to GRUB PF2 itself (no external tool).
+* Menu rows are columns (system, language, machines served, what comes with it) and every entry has a short bilingual tip (`menu_tip`).
+* Fonts bundled under `assets/fonts` (SIL OFL): IBM Plex Sans / Mono, Barlow Condensed; the offline manual embeds them.
+* Manual: vertical PT / EN + theme rail, code panels with file header and line numbers, integrity pill, print layout.
+* Wallpapers for every install: "tape" set (`Tape.ps1`: Sunset, SunsetLight, Diagonal, Teal) and exploded-view set (`Blueprint.ps1`: Dark, Light, X-ray, Sunset) per machine and per system; BASE kits now get wallpapers too (the per-system set), default is Tape-Sunset.
+* New drawing type `tiny-fanless` (passive, finned chassis).
+* Policy: every non-server install option exists in PT-BR and EN-US (catalog entries added for the lite editions; the generator warns otherwise); servers stay English only.
+
 ## [1.1.0] - 2026-11-16
 
 * Design tokens (`config/design.json`): Material-style solid palettes, dark and light, per interface (menu, docs, desktop, diagram).

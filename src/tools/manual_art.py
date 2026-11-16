@@ -384,37 +384,56 @@ def halftone(img, rgb, strength=26):
 
 def finish(img, pal, family, model):
     d = ImageDraw.Draw(img)
-    fam_f, mod_f = font(74, True), font(50, False)
-    d.text((150, H - 190), family, font=fam_f, fill=hex2rgb(pal['onSurface']))
+    fam_f, mod_f = font(118, True, 'title'), font(46, False, 'mono')
+    d.text((150, H - 150), family, font=fam_f, fill=hex2rgb(pal['onSurface']), anchor='ls')
     wfam = d.textlength(family, font=fam_f)
-    d.text((150 + wfam + 14, H - 178), model.upper(), font=mod_f, fill=hex2rgb(pal['onSurfaceVariant']))
-    d.ellipse([118, H - 142, 136, H - 124], fill=hex2rgb(pal['nub']))
+    d.ellipse([150 + wfam + 10, H - 176, 150 + wfam + 34, H - 152], fill=hex2rgb(pal['nub']))
+    d.text((150 + wfam + 62, H - 152), model.upper(), font=mod_f, fill=hex2rgb(pal['onSurfaceVariant']), anchor='ls')
     d.rectangle([W - 100, H - 580, W, H - 220], fill=hex2rgb(pal['seed-brand']))
     tab = Image.new('RGBA', (360, 100), (0, 0, 0, 0)); td = ImageDraw.Draw(tab)
-    tf = font(54, True); tw = td.textlength('ThinkLab', font=tf); td.text(((360 - tw) / 2, 22), 'ThinkLab', font=tf, fill=(255, 255, 255, 255))
-    img.paste(tab.rotate(90, expand=True), (W - 100, H - 580), tab.rotate(90, expand=True))
+    td.text((180, 52), 'ThinkLab', font=font(64, True, 'title'), fill=(255, 255, 255, 255), anchor='mm')
+    rot = tab.rotate(90, expand=True); img.paste(rot, (W - 100, H - 580), rot)
     return img
 
 
-def render_variant(alpha, pal, family, model, style):
+def render_variant(alpha, pal, family, model, style, red=None):
     bg = np.array(hex2rgb(pal['background']), np.float32); ln = np.array(hex2rgb(pal['onSurface']), np.float32)
     if style == 'xray':
         dark = pal['_scheme'] == 'dark'
         top = np.array(hex2rgb('#04101C' if dark else '#EAF4FB'), np.float32); bot = np.array(hex2rgb('#0B2036' if dark else '#D5E8F6'), np.float32)
         t = np.linspace(0, 1, H, dtype=np.float32)[:, None, None]
-        base = top[None, None, :] * (1 - t) + bot[None, None, :] * t; base = np.repeat(base, W, axis=1)
+        base = np.repeat(top[None, None, :] * (1 - t) + bot[None, None, :] * t, W, axis=1)
         core = np.array(hex2rgb('#CFF6FF' if dark else '#0A3F8F'), np.float32); glowc = np.array(hex2rgb('#2FD2FF' if dark else '#2B8CFF'), np.float32)
-        g1 = ndi.gaussian_filter(alpha, 5); g2 = ndi.gaussian_filter(alpha, 22)
-        glow = np.clip(g1 * 1.5 + g2 * 2.4, 0, 1)[:, :, None]
+        glow = np.clip(ndi.gaussian_filter(alpha, 5) * 1.5 + ndi.gaussian_filter(alpha, 22) * 2.4, 0, 1)[:, :, None]
         out = base * (1 - glow * (0.8 if dark else 0.45)) + glowc[None, None, :] * glow * (0.8 if dark else 0.45)
         out = out * (1 - alpha[:, :, None] * 0.95) + core[None, None, :] * alpha[:, :, None] * 0.95
-        img = Image.fromarray(np.clip(out, 0, 255).astype(np.uint8))
+        if red is not None: out[red] = hex2rgb('#FF5A4E')
         pal = dict(pal); pal['onSurface'] = '#E6F7FF' if dark else '#0A2A5E'; pal['onSurfaceVariant'] = '#7FB8D6' if dark else '#3A5C86'
-        return finish(img, pal, family, model)
+        return finish(Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)), pal, family, model)
+    if style == 'sunset':                                        # tape look: black, five stripes running in from the left
+        img = Image.new('RGB', (W, H), hex2rgb('#0B0B0C')); d = ImageDraw.Draw(img); y = 1380
+        for c in ('#FEC514', '#FF8A2B', '#E95420', '#F04E98', '#7A3FA0'):
+            d.polygon([(0, y), (1560 - (y - 1380), y), (1560 - (y - 1380) - 66, y + 66), (0, y + 66)], fill=hex2rgb(c)); y += 66
+        arr = np.asarray(img, np.float32); ln = np.array([245, 245, 245], np.float32)
+        out = arr * (1 - alpha[:, :, None] * 0.95) + ln[None, None, :] * alpha[:, :, None] * 0.95
+        if red is not None: out[red] = hex2rgb(pal['nub'])
+        pal = dict(pal); pal['onSurface'] = '#F5F5F5'; pal['onSurfaceVariant'] = '#A8A8A8'
+        return finish(Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)), pal, family, model)
     img = Image.new('RGB', (W, H), tuple(int(v) for v in bg)); halftone(img, hex2rgb(pal['onSurface']))
     arr = np.asarray(img, np.float32)
     out = arr * (1 - alpha[:, :, None] * 0.93) + ln[None, None, :] * alpha[:, :, None] * 0.93
+    if red is not None: out[red] = hex2rgb(pal['nub'])
     return finish(Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)), pal, family, model)
+
+
+def thinklab_set(alpha, red, sp, design, outdir, label):
+    """ThinkLab editions of an exploded view: dark, light, X-ray and tape (sunset stripes); 4K + Full HD."""
+    model = f"{sp['family']} {sp['model']}"
+    todo = [('Exploded-Dark', 'dark', 'line'), ('Exploded-Light', 'light', 'line'), ('Exploded-XRay', 'dark', 'xray'), ('Exploded-Sunset', 'dark', 'sunset')]
+    for tag, scheme, style in todo:
+        im = render_variant(alpha, palette(design, scheme), 'ThinkLab', model, style, red)
+        im.save(os.path.join(outdir, f'ThinkLab-{label}-{tag}.png')); im.resize((1920, 1080), Image.LANCZOS).save(os.path.join(outdir, f'ThinkLab-{label}-{tag}-FHD.png'))
+    print('  thinklab set:', ', '.join(t[0] for t in todo))
 
 
 def render_lenovo(alpha, family, model, tab_text='', calib=None, mcalib='A000 AAAA'):
@@ -470,13 +489,8 @@ def main():
             dbg = Image.fromarray(((1 - clean) * 255).astype(np.uint8)).convert('RGB'); dd = ImageDraw.Draw(dbg); fd = font(46, True)
             for k, pt in enumerate(parts): dd.text((pt['cx'], pt['cy']), str(k), font=fd, fill=(220, 0, 0), anchor='mm')
             dbg.save(os.path.join(a.lib, f'_download/manuals/_pg/parts_{code}.png'))
-        alpha = compose(parts)
         outdir = os.path.join(a.lib, 'wallpapers', code); os.makedirs(outdir, exist_ok=True)
         label = sp.get('label', code)
-        for scheme in ('dark', 'light'):
-            pal = palette(design, scheme)
-            for style, tag in (('line', 'Manual'), ('xray', 'XRay')):
-                render_variant(alpha, pal, sp['family'], sp['model'], style).save(os.path.join(outdir, f'ThinkLab-{label}-{tag}-{scheme.capitalize()}.png'))
         # vendor-look replica (dark grey, red tab): parts placed like the vendor's own wallpaper
         if sp.get('art'):                                        # finished line art or manual figure -> vendor-style wallpapers
             ink_, red_ = art_ink(sp['art'], a.lib)
@@ -492,6 +506,7 @@ def main():
                 tag = 'Original' + suffix
                 img.save(os.path.join(outdir, f'{sp.get("prefix", "Vendor")}-{lbl}-{tag}.png')); img.resize((1920, 1080), Image.LANCZOS).save(os.path.join(outdir, f'{sp.get("prefix", "Vendor")}-{lbl}-{tag}-FHD.png'))
                 print(f'  art {tag}')
+                if suffix == '': thinklab_set(al, rc, sp, design, outdir, lbl)
             continue
         if sp.get('edits'):                                      # edit the vendor wallpaper: erase what this machine lacks, drop its own parts in place
             lp_all = logical_parts(clean, im.width, sp['layout'], sp.get('rect_scale', 1.0))
@@ -531,6 +546,7 @@ def main():
                     tag = ed.get('tag', 'Original') + var.get('suffix', '')
                     img.save(os.path.join(outdir, f'{sp.get("prefix", "Vendor")}-{label}-{tag}.png')); img.resize((1920, 1080), Image.LANCZOS).save(os.path.join(outdir, f'{sp.get("prefix", "Vendor")}-{label}-{tag}-FHD.png'))
                     print(f'  edit {tag}: parts', len(use))
+                    if ed.get('thinklab') and not var: thinklab_set(al, np.zeros(al.shape, bool), sp, design, outdir, label)
                 if a.debug: contact_sheet(use, full, os.path.join(a.lib, f'_download/manuals/_pg/sheet_{code}_{ed.get("tag","Original")}.png'))
             continue
         elif sp.get('layout'):

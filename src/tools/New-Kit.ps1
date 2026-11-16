@@ -11,7 +11,7 @@ New-Item -ItemType Directory -Force $Out | Out-Null
 
 & "$PSScriptRoot\New-Unattend.ps1"       -SitePath $SitePath -Out $Out
 & "$PSScriptRoot\New-LinuxTemplates.ps1" -SitePath $SitePath -Out $Out
-& "$PSScriptRoot\Build-Theme.ps1"        -Out (Join-Path $Out 'ventoy\theme\thinklab') | Select-Object -Last 1
+& "$PSScriptRoot\Build-Theme.ps1"        -Out (Join-Path $Out 'ventoy\theme') | Select-Object -Last 1
 & "$PSScriptRoot\Build-PeExtras.ps1"     -Stage $Out | Select-Object -First 1
 & "$PSScriptRoot\Build-Branding.ps1"      -SitePath $SitePath -Out $Out
 & "$PSScriptRoot\New-VentoyConfig.ps1"   -SitePath $SitePath -Out $Out

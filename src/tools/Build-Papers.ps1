@@ -9,7 +9,7 @@ function Get-PaperIndex {
   $idx = @()
   $idx += @{ Id = 'papel-geral'; Group = 'general'; Kind = 'general'; Ref = $null; Title = @{ pt = 'Paper geral do pen-drive'; en = 'Stick overview paper' } }
   foreach ($w in $CAT.windows) {
-    $t = $w.label -replace '\s*-\s*', ' - '
+    $t = $w.label
     $idx += @{ Id = ('inst-{0}-{1}' -f $w.os.ToLower(), $w.lang.ToLower()); Group = 'win'; Kind = 'windows'; Ref = $w; Title = @{ pt = (Enc $t); en = (Enc $t) } }
   }
   foreach ($l in $CAT.linux) {

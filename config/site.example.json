@@ -45,9 +45,9 @@
       "specs": "Example: low-power CPU, 4 GB RAM, 256 GB SSD",
       "profile": "Office", "profileFile": "Leve", "role": "O",
       "windows": [
-        { "os": "L21", "langs": [ "PT" ] },
-        { "os": "I10", "langs": [ "EN" ] },
-        { "os": "L24", "langs": [ "PT" ] }
+        { "os": "L21", "langs": [ "EN", "PT" ] },
+        { "os": "I10", "langs": [ "EN", "PT" ] },
+        { "os": "L24", "langs": [ "EN", "PT" ] }
       ],
       "drivers": { "L21": [ "Drivers\\MINI1\\Pack" ], "I10": [ "Drivers\\MINI1\\Pack" ], "L24": [ "Drivers\\MINI1\\Pack" ] },
       "linux": { "alma": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "rhel": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "centos": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "ubuntu": { "server": [ "EN" ] } }

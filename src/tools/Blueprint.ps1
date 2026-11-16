@@ -1,16 +1,16 @@
 # Isometric line-art "exploded view" wallpapers of a machine (own artwork; no vendor logos, no copied manual images).
-# Library: New-Blueprint -Machine <site machine> -Scheme dark|light -Out <png> [-Width 3840 -Height 2160]
-#   machine.blueprint selects the drawing: tower | laptop | tiny   (config\site.json, per machine)
+# Library: New-Blueprint -Machine <site machine> -Scheme dark|light -Style Line|XRay|Sunset -Out <png> [-Type .. -Label .. -Width 3840 -Height 2160]
+#   machine.blueprint selects the drawing: tower | laptop | tiny | tiny-fanless   (config\site.json, per machine)
 # Colours come from config\design.json (interface "desktop"). ASCII only.
 Add-Type -AssemblyName System.Drawing
 
 class BP {
   [Drawing.Graphics]$G; [Drawing.Pen]$Pen; [Drawing.Pen]$Thin; [Drawing.Brush]$Bg; [Drawing.Brush]$Nub
   [double]$S; [double]$Cx; [double]$Cy
-  BP([Drawing.Graphics]$g, [Drawing.Color]$line, [Drawing.Color]$bg, [Drawing.Color]$nub, [double]$s, [double]$cx, [double]$cy) {
+  BP([Drawing.Graphics]$g, [Drawing.Color]$line, [Drawing.Color]$bg, [Drawing.Color]$nub, [double]$s, [double]$cx, [double]$cy, [double]$lw) {
     $this.G = $g; $this.S = $s; $this.Cx = $cx; $this.Cy = $cy
-    $this.Pen = New-Object Drawing.Pen $line, 2.6; $this.Pen.LineJoin = 'Round'
-    $this.Thin = New-Object Drawing.Pen ([Drawing.Color]::FromArgb(150, $line)), 1.5; $this.Thin.LineJoin = 'Round'
+    $this.Pen = New-Object Drawing.Pen $line, ([single](2.6 * $lw)); $this.Pen.LineJoin = 'Round'
+    $this.Thin = New-Object Drawing.Pen ([Drawing.Color]::FromArgb([Math]::Min(150, [int]$line.A), $line)), ([single](1.5 * $lw)); $this.Thin.LineJoin = 'Round'
     $this.Bg = New-Object Drawing.SolidBrush $bg; $this.Nub = New-Object Drawing.SolidBrush $nub
   }
   [Drawing.PointF] P([double]$x, [double]$y, [double]$z) { return (New-Object Drawing.PointF ([float]($this.Cx + ($x - $y) * 0.866 * $this.S)), ([float]($this.Cy + ($x + $y) * 0.5 * $this.S - $z * $this.S))) }
@@ -97,21 +97,44 @@ class BP {
   Adapter([double]$x, [double]$y, [double]$z) { $this.Box($x, $y, $z, 60, 130, 24, $false); $this.Cable(@(@(($x + 30), ($y + 130), ($z + 12)), @(($x + 70), ($y + 170), ($z + 4)), @(($x + 120), ($y + 160), ($z + 2)))); $this.Cable(@(@(($x + 30), $y, ($z + 12)), @(($x - 20), ($y - 30), ($z + 4)), @(($x - 60), ($y - 20), ($z + 2)))) }
 }
 
+# fonts for the title block (bundled OFL fonts; nothing is installed)
+$script:BpFonts = New-Object Drawing.Text.PrivateFontCollection
+Get-ChildItem (Join-Path (Resolve-Path "$PSScriptRoot\..\..").Path 'assets\fonts') -Filter *.ttf | ForEach-Object { $script:BpFonts.AddFontFile($_.FullName) }
+function BpFont([string]$pattern, [single]$px) {
+  $fam = $script:BpFonts.Families | Where-Object { $_.Name -like $pattern } | Select-Object -First 1
+  if (-not $fam) { $fam = New-Object Drawing.FontFamily 'Segoe UI' }
+  $st = if ($fam.IsStyleAvailable('Regular')) { 'Regular' } else { 'Bold' }
+  New-Object Drawing.Font $fam, $px, ([Drawing.FontStyle]$st), ([Drawing.GraphicsUnit]::Pixel)
+}
+
+# Styles: Line (matte background + halftone, dark or light scheme), XRay (glowing lines on navy), Sunset (black + stripe band).
+# -Type overrides machine.blueprint (tower | laptop | tiny | tiny-fanless); -Label overrides the caption (default: the machine name).
 function New-Blueprint {
-  param($Machine, [string]$Scheme = 'dark', [string]$Out, [int]$Width = 3840, [int]$Height = 2160)
+  param($Machine, [string]$Scheme = 'dark', [ValidateSet('Line', 'XRay', 'Sunset')][string]$Style = 'Line', [string]$Type = '', [string]$Label = '', [string]$Out, [int]$Width = 3840, [int]$Height = 2160)
   $pal = Get-Palette 'desktop' $Scheme
-  $col = { param($h) $x = $h.TrimStart('#'); [Drawing.Color]::FromArgb(255, [Convert]::ToInt32($x.Substring(0, 2), 16), [Convert]::ToInt32($x.Substring(2, 2), 16), [Convert]::ToInt32($x.Substring(4, 2), 16)) }
-  $bgC = & $col $pal.background; $lineC = & $col $pal.onSurface; $nubC = & $col $pal.nub; $brandC = & $col $pal.'seed-brand'; $mutedC = & $col $pal.onSurfaceVariant
+  $col = { param($h, $a = 255) $x = $h.TrimStart('#'); [Drawing.Color]::FromArgb($a, [Convert]::ToInt32($x.Substring(0, 2), 16), [Convert]::ToInt32($x.Substring(2, 2), 16), [Convert]::ToInt32($x.Substring(4, 2), 16)) }
+  $k = $Width / 3840.0
+  $bgC = & $col $pal.background; $lineC = & $col $pal.onSurface; $nubC = & $col $pal.nub; $brandC = & $col $pal.'seed-brand'; $mutedC = & $col $pal.onSurfaceVariant; $fillC = $bgC
+  if ($Style -eq 'XRay') { $bgC = & $col '#061321'; $lineC = & $col '#CFF6FF'; $mutedC = & $col '#7FB8D6'; $fillC = & $col '#071726' 205; $nubC = & $col '#FF5A4E' }
+  if ($Style -eq 'Sunset') { $bgC = & $col '#0B0B0C'; $lineC = & $col '#F5F5F5'; $mutedC = & $col '#A8A8A8'; $fillC = $bgC }
   $bmp = New-Object Drawing.Bitmap $Width, $Height, ([Drawing.Imaging.PixelFormat]::Format24bppRgb)
   $g = [Drawing.Graphics]::FromImage($bmp); $g.SmoothingMode = 'AntiAlias'; $g.TextRenderingHint = 'AntiAliasGridFit'; $g.Clear($bgC)
-  # halftone dots (granular background), fading toward the lower left
-  $dotB = New-Object Drawing.SolidBrush ([Drawing.Color]::FromArgb(26, $lineC))
-  for ($yy = 12; $yy -lt $Height; $yy += 28) { for ($xx = 12; $xx -lt $Width; $xx += 28) { $f = [Math]::Max(0, ($xx / $Width) * 0.8 + (1 - $yy / $Height) * 0.5 - 0.35); $r = 1.0 + 2.2 * [Math]::Min(1, $f); $g.FillEllipse($dotB, [float]($xx - $r), [float]($yy - $r), [float](2 * $r), [float](2 * $r)) } }
-  $type = if ($Machine.PSObject.Properties.Name -contains 'blueprint' -and $Machine.blueprint) { $Machine.blueprint } else { 'tower' }
+  switch ($Style) {
+    'XRay' { $gb = New-Object Drawing.Drawing2D.LinearGradientBrush ((New-Object Drawing.Rectangle 0, 0, $Width, $Height), (& $col '#04101C'), (& $col '#0B2036'), 90.0); $g.FillRectangle($gb, 0, 0, $Width, $Height); $gb.Dispose() }
+    'Sunset' { $y = 1380 * $k
+      foreach ($c in '#FEC514', '#FF8A2B', '#E95420', '#F04E98', '#7A3FA0') { $sb = New-Object Drawing.SolidBrush (& $col $c); $x1 = (1560 * $k) - ($y - 1380 * $k)
+        $g.FillPolygon($sb, [Drawing.PointF[]]@((New-Object Drawing.PointF 0, ([single]$y)), (New-Object Drawing.PointF ([single]$x1), ([single]$y)), (New-Object Drawing.PointF ([single]($x1 - 66 * $k)), ([single]($y + 66 * $k))), (New-Object Drawing.PointF 0, ([single]($y + 66 * $k))))); $sb.Dispose(); $y += 66 * $k } }
+    default { $dotB = New-Object Drawing.SolidBrush ([Drawing.Color]::FromArgb(26, $lineC))                       # halftone, fading toward the lower left
+      for ($yy = 12; $yy -lt $Height; $yy += [int](28 * $k + 0.5)) { for ($xx = 12; $xx -lt $Width; $xx += [int](28 * $k + 0.5)) { $f = [Math]::Max(0, ($xx / $Width) * 0.8 + (1 - $yy / $Height) * 0.5 - 0.35); $r = (1.0 + 2.2 * [Math]::Min(1, $f)) * $k; $g.FillEllipse($dotB, [single]($xx - $r), [single]($yy - $r), [single](2 * $r), [single](2 * $r)) } }
+      $dotB.Dispose() }
+  }
+  $type = if ($Type) { $Type } elseif ($Machine.PSObject.Properties.Name -contains 'blueprint' -and $Machine.blueprint) { $Machine.blueprint } else { 'tower' }
+  $script:BpNoFan = $type -like '*fanless*'; if ($type -like 'tiny*') { $type = 'tiny' }
   $GRID = 275.0; $n = 4; $s = ($Height / 1350.0) * 0.98
-  # centre of the 4x4 grid sits at 62% of the width, vertically centred (clear of the ThinkLab tab)
-  $bp = [BP]::new($g, $lineC, $bgC, $nubC, $s, $Width * 0.62, ($Height * 0.50 - ($n - 1) * $GRID * 0.5 * $s))
-  # parts: grid cell (gx, gy), lift z and a drawing block; painted back to front
+  $ox = $Width * 0.62; $oy = ($Height * 0.50 - ($n - 1) * $GRID * 0.5 * $s)
+  $passes = @()
+  if ($Style -eq 'XRay') { $passes += , ([BP]::new($g, (& $col '#2FD2FF' 24), [Drawing.Color]::Transparent, [Drawing.Color]::Transparent, $s, $ox, $oy, 5.0 * $k)); $passes += , ([BP]::new($g, (& $col '#2FD2FF' 46), [Drawing.Color]::Transparent, [Drawing.Color]::Transparent, $s, $ox, $oy, 2.6 * $k)) }
+  $passes += , ([BP]::new($g, $lineC, $fillC, $nubC, $s, $ox, $oy, $k))
   $parts = switch ($type) {
     'tower' { @(
       @{ gx = 0; gy = 0; z = 60;  a = { param($b, $x, $y, $z) $b.Fan($x, $y, $z, 80) } },
@@ -146,28 +169,25 @@ function New-Blueprint {
       @{ gx = 1; gy = 0; z = 60;  a = { param($b, $x, $y, $z) $b.Adapter($x, $y, $z) } },
       @{ gx = 2; gy = 0; z = 100; a = { param($b, $x, $y, $z) $b.Box($x, $y, $z, 60, 140, 5, $false) } },
       @{ gx = 0; gy = 1; z = 80;  a = { param($b, $x, $y, $z) $b.Board($x, $y, $z, 170, 180, 2, $true) } },
-      @{ gx = 1; gy = 1; z = 150; a = { param($b, $x, $y, $z) $b.Heatsink($x, $y, $z, 70, 70, 24, 10); $b.Fan($x, $y, ($z + 52), 70) } },
+      @{ gx = 1; gy = 1; z = 150; a = { param($b, $x, $y, $z) if ($script:BpNoFan) { $b.Heatsink($x, $y, $z, 150, 110, 46, 18) } else { $b.Heatsink($x, $y, $z, 70, 70, 24, 10); $b.Fan($x, $y, ($z + 52), 70) } } },
       @{ gx = 2; gy = 1; z = 30;  a = { param($b, $x, $y, $z) $b.Ssd($x, $y, $z) } },
       @{ gx = 0; gy = 2; z = 20;  a = { param($b, $x, $y, $z) $b.Dimm($x, $y, $z, 60); $b.Dimm(($x + 22), $y, ($z + 8), 60) } },
       @{ gx = 1; gy = 2; z = 0;   a = { param($b, $x, $y, $z) $b.M2($x, $y, $z); $b.Wlan(($x + 50), ($y + 40), $z) } },
       @{ gx = 2; gy = 2; z = 0;   a = { param($b, $x, $y, $z) $b.Box($x, $y, $z, 170, 190, 6, $false) } }) }
   }
-  foreach ($p in ($parts | Sort-Object { $_.gx + $_.gy }, { $_.z })) { & $p.a $bp ($p.gx * $GRID) ($p.gy * $GRID) $p.z }
-  # title block (bottom left) and ThinkLab tab (right edge)
-  $family = if ($Machine.PSObject.Properties.Name -contains 'family' -and $Machine.family) { $Machine.family } else { 'ThinkLab' }
-  $model = ($Machine.fullName -replace '\s*\(.*\)$', '') -replace ("^" + [regex]::Escape($family) + "\s*"), ''
-  $f1 = New-Object Drawing.Font 'Bahnschrift SemiBold Condensed', 74, ([Drawing.FontStyle]::Regular), ([Drawing.GraphicsUnit]::Pixel)
-  $f2 = New-Object Drawing.Font 'Bahnschrift Light', 50, ([Drawing.FontStyle]::Regular), ([Drawing.GraphicsUnit]::Pixel)
-  $lineBr = New-Object Drawing.SolidBrush $lineC
-  $g.DrawString($family, $f1, $lineBr, 150, $Height - 190)
-  $wFam = $g.MeasureString($family, $f1).Width
-  $g.DrawString($model.ToUpper(), $f2, (New-Object Drawing.SolidBrush $mutedC), 150 + $wFam - 6, $Height - 178)
-  $tab = New-Object Drawing.SolidBrush $brandC; $g.FillRectangle($tab, $Width - 100, $Height - 580, 100, 360)
+  foreach ($bp in $passes) { foreach ($p in ($parts | Sort-Object { $_.gx + $_.gy }, { $_.z })) { & $p.a $bp ($p.gx * $GRID) ($p.gy * $GRID) $p.z } }
+  # title block (bottom left): ThinkLab + red dot + caption; brand tab at the right edge
+  $cap = if ($Label) { $Label } else { ($Machine.fullName -replace '\s*\(.*\)$', '') }
+  $sf = [Drawing.StringFormat]::GenericTypographic.Clone(); $sf.FormatFlags = $sf.FormatFlags -bor [Drawing.StringFormatFlags]::MeasureTrailingSpaces
+  $f1 = BpFont 'Barlow Condensed SemiBold' (118 * $k); $f2 = BpFont 'IBM Plex Mono' (46 * $k); $inkB = New-Object Drawing.SolidBrush $lineC; $mutB = New-Object Drawing.SolidBrush $mutedC
+  $g.DrawString('ThinkLab', $f1, $inkB, [single](150 * $k), [single]($Height - 266 * $k), $sf)
+  $wf = $g.MeasureString('ThinkLab', $f1, (New-Object Drawing.PointF 0, 0), $sf).Width
+  $nb = New-Object Drawing.SolidBrush $nubC; $g.FillEllipse($nb, [single](150 * $k + $wf + 10 * $k), [single]($Height - 176 * $k), [single](24 * $k), [single](24 * $k))
+  $g.DrawString($cap.ToUpper(), $f2, $mutB, [single](150 * $k + $wf + 62 * $k), [single]($Height - 198 * $k), $sf)
+  $tab = New-Object Drawing.SolidBrush $brandC; $g.FillRectangle($tab, [single]($Width - 100 * $k), [single]($Height - 580 * $k), [single](100 * $k), [single](360 * $k))
   $st = New-Object Drawing.StringFormat; $st.Alignment = 'Center'; $st.LineAlignment = 'Center'
-  $g.TranslateTransform($Width - 50, $Height - 400); $g.RotateTransform(-90)
-  $f3 = New-Object Drawing.Font 'Bahnschrift SemiBold', 54, ([Drawing.FontStyle]::Regular), ([Drawing.GraphicsUnit]::Pixel)
-  $g.DrawString('ThinkLab', $f3, [Drawing.Brushes]::White, 0, 0, $st); $g.ResetTransform()
-  $nb = New-Object Drawing.SolidBrush $nubC; $g.FillEllipse($nb, 118, $Height - 142, 18, 18)
+  $g.TranslateTransform([single]($Width - 50 * $k), [single]($Height - 400 * $k)); $g.RotateTransform(-90)
+  $g.DrawString('ThinkLab', (BpFont 'Barlow Condensed SemiBold' (64 * $k)), [Drawing.Brushes]::White, 0, 0, $st); $g.ResetTransform()
   $g.Dispose(); New-Item -ItemType Directory -Force (Split-Path $Out -Parent) | Out-Null
   $bmp.Save($Out, [Drawing.Imaging.ImageFormat]::Png); $bmp.Dispose()
 }

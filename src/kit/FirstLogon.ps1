@@ -158,12 +158,16 @@ try {
     Write-Host "OEM information: $($oem.manufacturer) / $model"
   }
   $wall = if ($Root) { Join-Path $Root 'Wallpapers' } else { $null }
-  if ($wall -and (Test-Path $wall) -and $kk -and $kk.machine -ne 'BASE') {
+  if ($wall -and (Test-Path $wall) -and $kk) {
+    # every install gets wallpapers: machine kits take the machine folder (+ the folders listed for it), BASE kits take the
+    # generic per-system set (Wallpapers\BASE). The default is the "tape" one (Sunset); the rest stays available in the theme.
     $dest = "$env:windir\Web\Wallpaper\ThinkLab"
     foreach ($f in @($kk.machine) + @($kk.wallpapers)) {
       if ($f -and (Test-Path (Join-Path $wall $f))) { New-Item -ItemType Directory -Force "$dest\$f" | Out-Null; Copy-Item (Join-Path $wall "$f\*") "$dest\$f" -Recurse -Force; Write-Host "wallpapers: $f" }
     }
-    $def = Get-ChildItem "$dest\$($kk.machine)" -Filter 'ThinkLab-*-Blueprint-Dark.png' -ErrorAction SilentlyContinue | Select-Object -First 1   # exploded-view blueprint first
+    $pick = if ($kk.machine -eq 'BASE') { "ThinkLab-$OS-Tape-Sunset.png" } else { 'ThinkLab-*-Tape-Sunset.png' }
+    $def = Get-ChildItem "$dest\$($kk.machine)" -Filter $pick -ErrorAction SilentlyContinue | Select-Object -First 1
+    if (-not $def) { $def = Get-ChildItem "$dest\$($kk.machine)" -Filter 'ThinkLab-*-Exploded-Dark.png' -ErrorAction SilentlyContinue | Select-Object -First 1 }
     if (-not $def) { $def = Get-ChildItem "$dest\$($kk.machine)" -Filter 'ThinkLab-*-Dark.png' -ErrorAction SilentlyContinue | Select-Object -First 1 }
     if ($def) {
       # default wallpaper for this user and for every new profile (Default user hive)

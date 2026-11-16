@@ -27,6 +27,9 @@ function Get-WindowsKits($Site, $Catalog) {
   $kits = @()
   foreach ($m in $Site.machines) {
     foreach ($wk in @($m.windows)) {
+      # policy: servers are English only; every other install option must exist in PT-BR and EN-US
+      if ($wk.os -notlike 'S*' -and ((@($wk.langs) -notcontains 'EN') -or (@($wk.langs) -notcontains 'PT'))) { Write-Warning "$($m.code)/$($wk.os): workstation kits should list both languages (EN, PT)" }
+      if ($wk.os -like 'S*' -and (@($wk.langs) | Where-Object { $_ -ne 'EN' })) { Write-Warning "$($m.code)/$($wk.os): server kits are English only" }
       foreach ($lang in @($wk.langs)) {
         $cat = $Catalog.windows | Where-Object { $_.os -eq $wk.os -and $_.lang -eq $lang } | Select-Object -First 1
         if (-not $cat) { Write-Warning "no catalog ISO for $($wk.os)/$lang (machine $($m.code))"; continue }

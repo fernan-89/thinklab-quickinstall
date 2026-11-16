@@ -6,6 +6,9 @@
 <p>Leia a matriz em duas dire&ccedil;&otilde;es: cada <b>linha</b> &eacute; uma m&aacute;quina (todos os kits dela) e cada <b>coluna</b> &eacute; um sistema (todas as m&aacute;quinas que o recebem). A altura do cubo &eacute; a quantidade de kits (idiomas, edi&ccedil;&otilde;es e vers&otilde;es); a cor indica a fam&iacute;lia. No menu de boot o mesmo agrupamento aparece assim: a &aacute;rvore agrupa por sistema e, dentro de cada ISO, os kits ficam agrupados por m&aacute;quina.</p>
 {{DIAGRAM:matrix}}
 {{KITS_TABLE}}
+<h2>Tudo nasce de um arquivo</h2>
+<p>As m&aacute;quinas, os sistemas, os idiomas, os drivers e os programas extras s&atilde;o descritos em <code>config/site.json</code> (privado). O exemplo p&uacute;blico abaixo mostra o formato; o gerador transforma isso em arquivos de resposta, menu, manual e pap&eacute;is de parede.</p>
+{{CODE:site}}
 <h2>Como ler o nome</h2>
 <ul>
   <li><code>W10</code>/<code>W11</code> Windows 10/11, <code>S19</code> Server 2019, <code>I10</code> Windows 10 IoT, <code>L21</code>/<code>L24</code> LTSC 2021/2024; no Linux, <code>a10</code> = AlmaLinux 10 e <code>u26</code> = Ubuntu 26.</li>
@@ -21,6 +24,9 @@
 <p>Read the matrix in two directions: each <b>row</b> is a machine (all of its kits) and each <b>column</b> is a system (every machine that receives it). Cube height is the number of kits (languages, editions and versions); colour marks the family. In the boot menu the same grouping shows up like this: the tree groups by system and, inside each ISO, the kits are grouped by machine.</p>
 {{DIAGRAM:matrix}}
 {{KITS_TABLE}}
+<h2>Everything starts from one file</h2>
+<p>Machines, systems, languages, drivers and extra programs are described in <code>config/site.json</code> (private). The public example below shows the format; the generator turns it into answer files, the menu, the manual and the wallpapers.</p>
+{{CODE:site}}
 <h2>Reading the name</h2>
 <ul>
   <li><code>W10</code>/<code>W11</code> Windows 10/11, <code>S19</code> Server 2019, <code>I10</code> Windows 10 IoT, <code>L21</code>/<code>L24</code> LTSC 2021/2024; on Linux, <code>a10</code> = AlmaLinux 10 and <code>u26</code> = Ubuntu 26.</li>

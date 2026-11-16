@@ -9,7 +9,8 @@ body{background-image:radial-gradient(ellipse 70% 320px at 50% 0,var(--glow),tra
 
 /* type */
 body,.side a,.note,.card,table{font-family:'IBM Plex Sans','Ubuntu Sans',Ubuntu,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
-main h1,.lead,.brand,.global span:first-child{font-family:var(--mono);letter-spacing:-.01em}
+main h1,.global span:first-child{font-family:var(--mono);letter-spacing:-.02em}
+.lead{font-family:'IBM Plex Sans',system-ui,sans-serif}
 main h1{font-weight:600}
 
 /* sections numbered like the Kong pages: "01/ Title" in a ruled bar */
@@ -47,3 +48,20 @@ main h2:after{content:"";position:absolute;right:12px;top:50%;width:9px;height:9
 @media (max-width:1180px){.rail{display:none}}
 
 svg.iso .dot{fill:#e2231a}
+
+/* embedded fonts (OFL, copied to assets/fonts by Build-Docs.ps1): the manual looks the same offline */
+@font-face{font-family:'IBM Plex Sans';font-weight:400;src:url(fonts/IBMPlexSans-400.ttf) format('truetype');font-display:swap}
+@font-face{font-family:'IBM Plex Sans';font-weight:600;src:url(fonts/IBMPlexSans-600.ttf) format('truetype');font-display:swap}
+@font-face{font-family:'IBM Plex Mono';font-weight:400;src:url(fonts/IBMPlexMono-Regular.ttf) format('truetype');font-display:swap}
+@font-face{font-family:'IBM Plex Mono';font-weight:600;src:url(fonts/IBMPlexMono-SemiBold.ttf) format('truetype');font-display:swap}
+@font-face{font-family:'Barlow Condensed';font-weight:600;src:url(fonts/BarlowCondensed-SemiBold.ttf) format('truetype');font-display:swap}
+.brand{font-family:'Barlow Condensed','IBM Plex Sans',sans-serif!important;font-weight:600;font-size:2.5rem!important;letter-spacing:.005em}
+code,.mono{font-family:var(--mono)}
+.side h4{font:600 .7rem/1 var(--mono);letter-spacing:.16em;text-transform:uppercase}
+
+/* status pill (footer): the kit carries its own integrity manifest */
+.pill{display:inline-flex;align-items:center;gap:.5rem;border:1px solid var(--border);border-radius:999px;padding:.3rem .8rem;margin-left:.8rem;font:600 .72rem/1 var(--mono);letter-spacing:.06em;color:var(--text);background:var(--surface);white-space:nowrap}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.rail button{font-size:.9rem;letter-spacing:0;writing-mode:horizontal-tb}
+
+@media print{.global,.band,.search,.side,.pager,.rail{display:none!important}.wrap{display:block}body{background:#fff!important;color:#000}main h2{break-after:avoid}figure.fig,.tablewrap,.code{break-inside:avoid}}

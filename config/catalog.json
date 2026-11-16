@@ -110,6 +110,22 @@
       }
     },
     {
+      "os": "L21",
+      "lang": "EN",
+      "iso": "Windows10_EnterpriseLTSC2021_x64_21H2-19041.1288_en-US.iso",
+      "label": "Windows 10 LTSC 2021 (leve) - ENGLISH (EN-US)",
+      "class": "winlite",
+      "office": "2021",
+      "fileLabel": "Win10-EnterpriseLTSC2021",
+      "editions": {
+        "Default": {
+          "image": "Windows 10 Enterprise LTSC 2021",
+          "key": "LTSC"
+        }
+      },
+      "supply": "ISO not shipped with the reference stick: add it under this exact name to enable these kits"
+    },
+    {
       "os": "I10",
       "lang": "EN",
       "iso": "Windows10_IoTEnterprise_x64_22H2-19041.2006_en-US.iso",
@@ -125,6 +141,22 @@
       }
     },
     {
+      "os": "I10",
+      "lang": "PT",
+      "iso": "Windows10_IoTEnterprise_x64_22H2-19041.2006_pt-BR.iso",
+      "label": "Windows 10 IoT Enterprise 22H2 (leve) - PORTUGUES (PT-BR)",
+      "class": "winlite",
+      "office": "2021",
+      "fileLabel": "Win10-IoTEnterprise-22H2",
+      "editions": {
+        "Default": {
+          "image": "Windows 10 IoT Enterprise",
+          "key": "EntIoT"
+        }
+      },
+      "supply": "ISO not shipped with the reference stick: add it under this exact name to enable these kits"
+    },
+    {
       "os": "L24",
       "lang": "PT",
       "iso": "Windows11_EnterpriseLTSC2024_x64_24H2-26100.1742_pt-BR.iso",
@@ -138,6 +170,22 @@
           "key": "LTSC"
         }
       }
+    },
+    {
+      "os": "L24",
+      "lang": "EN",
+      "iso": "Windows11_EnterpriseLTSC2024_x64_24H2-26100.1742_en-US.iso",
+      "label": "Windows 11 LTSC 2024 (leve) - ENGLISH (EN-US)",
+      "class": "winlite",
+      "office": "2024",
+      "fileLabel": "Win11-EnterpriseLTSC2024",
+      "editions": {
+        "Default": {
+          "image": "Windows 11 Enterprise LTSC 2024",
+          "key": "LTSC"
+        }
+      },
+      "supply": "ISO not shipped with the reference stick: add it under this exact name to enable these kits"
     },
     {
       "os": "S19",

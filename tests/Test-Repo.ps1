@@ -42,7 +42,7 @@ if (Test-Path $lp) { $local = Get-Content $lp | Where-Object { $_.Trim() -and -n
 $files = @(git ls-files) + @(git diff --cached --name-only) | Sort-Object -Unique | Where-Object { $_ -and (Test-Path $_) }
 $hits = @()
 foreach ($f in $files) {
-  if ($f -match '\.(png|zip|ico)$') { continue }
+  if ($f -match '\.(png|zip|ico|ttf|otf|pf2)$') { continue }   # binary files (bundled OFL fonts, images)
   $lines = Get-Content $f -ErrorAction SilentlyContinue; $n = 0
   foreach ($l in $lines) {
     $n++

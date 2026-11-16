@@ -7,6 +7,7 @@ param([string]$SitePath, [string]$Out = (Join-Path (Resolve-Path "$PSScriptRoot\
 . "$PSScriptRoot\QI.Common.ps1"
 Add-Type -AssemblyName System.Drawing
 . "$PSScriptRoot\Blueprint.ps1"
+. "$PSScriptRoot\Tape.ps1"
 $ErrorActionPreference = 'Stop'
 $site = Get-Site $SitePath
 function C($hex, $a = 255) { $h = $hex.TrimStart('#'); [Drawing.Color]::FromArgb($a, [Convert]::ToInt32($h.Substring(0,2),16), [Convert]::ToInt32($h.Substring(2,2),16), [Convert]::ToInt32($h.Substring(4,2),16)) }
@@ -69,9 +70,29 @@ foreach ($m in $site.machines) {
     $gg.Dispose(); Save $bm (Join-Path $dir "ThinkLab-$($family -replace '[^A-Za-z0-9]','')-$($m.label -replace '[^A-Za-z0-9]','').png"); $n++
   }
 }
-# exploded-view "blueprint" wallpapers per machine, dark and light (own line art; see Blueprint.ps1)
+# exploded-view wallpapers (own line art; see Blueprint.ps1): dark, light, X-ray and sunset - per machine and per system (BASE)
+$bpStyles = @(@('Exploded-Dark', 'dark', 'Line'), @('Exploded-Light', 'light', 'Line'), @('Exploded-XRay', 'dark', 'XRay'), @('Exploded-Sunset', 'dark', 'Sunset'))
 foreach ($m in $site.machines) {
   $dir = Join-Path $Out "Wallpapers\$($m.code)"; $lbl = $m.label -replace '[^A-Za-z0-9]', ''
-  foreach ($sch in 'dark', 'light') { New-Blueprint -Machine $m -Scheme $sch -Out (Join-Path $dir "ThinkLab-$lbl-Blueprint-$($sch.Substring(0,1).ToUpper() + $sch.Substring(1)).png"); $n++ }
+  foreach ($bs in $bpStyles) { New-Blueprint -Machine $m -Scheme $bs[1] -Style $bs[2] -Out (Join-Path $dir "ThinkLab-$lbl-$($bs[0]).png"); $n++ }
+}
+$sysArt = [ordered]@{ W10 = @('Windows 10', 'laptop'); W11 = @('Windows 11', 'laptop'); L21 = @('Windows 10 LTSC 2021', 'tiny'); I10 = @('Windows 10 IoT', 'tiny-fanless'); L24 = @('Windows 11 LTSC 2024', 'tiny'); S19 = @('Windows Server 2019', 'tower') }
+foreach ($lx in (Get-Catalog).linux) { $sysArt[$lx.id] = @((($lx.label -split ' - ')[0] -replace '\s*\([^)]*\)', ''), $(if ($lx.id -eq 'ubuntu') { 'tower' } else { 'laptop' })) }
+$fakeM = [pscustomobject]@{ label = 'BASE'; fullName = 'BASE' }
+foreach ($sys in $sysArt.Keys) {
+  foreach ($bs in $bpStyles) { New-Blueprint -Machine $fakeM -Scheme $bs[1] -Style $bs[2] -Type $sysArt[$sys][1] -Label $sysArt[$sys][0] -Out (Join-Path $Out "Wallpapers\BASE\ThinkLab-$sys-$($bs[0]).png"); $n++ }
+}
+# retro "tape" wallpapers per machine (stripe bands and diagonal blocks in the ThinkLab palette; see Tape.ps1)
+foreach ($m in $site.machines) {
+  $dir = Join-Path $Out "Wallpapers\$($m.code)"; $lbl = $m.label -replace '[^A-Za-z0-9]', ''
+  foreach ($st in 'Sunset', 'SunsetLight', 'Diagonal', 'Teal') { New-TapeWallpaper -Machine $m -Style $st -Out (Join-Path $dir "ThinkLab-$lbl-Tape-$st.png"); $n++ }
+}
+# the same tape set for the generic BASE kits: one per Windows system in the catalog (the label is the system)
+$osLabel = @{ W10 = 'Windows 10'; W11 = 'Windows 11'; L21 = 'LTSC 2021'; I10 = 'IoT 10'; L24 = 'LTSC 2024'; S19 = 'Server 2019' }
+$cat = Get-Catalog; $bdir = Join-Path $Out 'Wallpapers\BASE'
+foreach ($os in @($cat.windows | ForEach-Object { $_.os } | Select-Object -Unique)) {
+  $w = $cat.windows | Where-Object { $_.os -eq $os } | Select-Object -First 1
+  $fake = [pscustomobject]@{ label = $(if ($osLabel.ContainsKey($os)) { $osLabel[$os] } else { $os }); fullName = (($w.label -split ' - ')[0]) }
+  foreach ($st in 'Sunset', 'SunsetLight', 'Diagonal', 'Teal') { New-TapeWallpaper -Machine $fake -Style $st -Out (Join-Path $bdir "ThinkLab-$os-Tape-$st.png"); $n++ }
 }
 "Build-Branding: OEM logo + $n wallpapers -> $Out"

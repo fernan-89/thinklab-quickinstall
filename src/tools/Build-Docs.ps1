@@ -164,6 +164,15 @@ function FilesTable($lang) {
   Table $head $rows
 }
 
+# code panels ("File: ..." header + line numbers): real excerpts of the public example configuration
+function CodeFile([string]$what) {
+  switch ($what) {
+    'site'   { CodeBox 'config/site.json' (Get-Content (Join-Path $script:RepoRoot 'config\site.example.json') -Encoding UTF8 | Select-Object -First 22) }
+    'design' { CodeBox 'config/design.json' (Get-Content (Join-Path $script:RepoRoot 'config\design.json') -Encoding UTF8 | Select-Object -Skip 2 -First 20) }
+    default  { '' }
+  }
+}
+
 # ------------------------------------------------------------------ assets
 New-Item -ItemType Directory -Force "$Out\assets", "$Out\pt", "$Out\en" | Out-Null
 function PalVars($scheme) {
@@ -201,10 +210,12 @@ main p,main li{max-width:78ch}main .lead{font-size:1.25rem;font-weight:500;margi
 @media (max-width:860px){.wrap{grid-template-columns:1fr;gap:16px}.side{display:none}main h1{font-size:2rem}}
 '@).Replace('__PALETTE__', $palCss) | Set-Content "$Out\assets\style.css" -Encoding UTF8
 Add-Content "$Out\assets\style.css" ($script:DiagramCss + "`nfigure.fig{margin:0}`n" + (Get-Content (Join-Path $Src 'theme.css') -Raw -Encoding UTF8)) -Encoding UTF8
+$fd = Join-Path $script:RepoRoot 'assets\fonts'; New-Item -ItemType Directory -Force "$Out\assets\fonts" | Out-Null      # embedded fonts (OFL)
+Copy-Item "$fd\*.ttf" "$Out\assets\fonts" -Force; Copy-Item "$fd\OFL-*.txt" "$Out\assets\fonts" -Force
 @'
 (function(){
   try{var th=localStorage.getItem('tl-theme');if(th)document.documentElement.setAttribute('data-theme',th)}catch(e){}
-  var tb=document.getElementById('th');if(tb)tb.addEventListener('click',function(){var d=document.documentElement,n=d.getAttribute('data-theme')==='light'?'dark':'light';d.setAttribute('data-theme',n);try{localStorage.setItem('tl-theme',n)}catch(e){}});
+  [].forEach.call(document.querySelectorAll('.thb'),function(tb){tb.addEventListener('click',function(){var d=document.documentElement,n=d.getAttribute('data-theme')==='light'?'dark':'light';d.setAttribute('data-theme',n);try{localStorage.setItem('tl-theme',n)}catch(e){}})});
   var lang=document.documentElement.getAttribute('data-l');var box=document.getElementById('q'),res=document.getElementById('res');
   if(!box||!window.SEARCH)return;
   box.addEventListener('input',function(){
@@ -231,6 +242,7 @@ for ($k = 0; $k -lt $Flat.Count; $k++) {
     }
     $body = $secHtml.Replace('{{MENU_TABLE}}', (MenuTable $lang)).Replace('{{KITS_TABLE}}', (KitsTable $lang)).Replace('{{FILES_TABLE}}', (FilesTable $lang)).Replace('{{MACHINE_CARDS}}', (Cards $lang)).Replace('{{DRIVERS_TABLE}}', (DriversTable $lang)).Replace('{{SOFTWARE_TABLE}}', (SoftwareTable $lang)).Replace('{{LINUX_TABLE}}', (LinuxTable $lang)).Replace('{{MACHINE_LIST}}', (MachineList)).Replace('{{NAME_PATTERN}}', (NamePattern)).Replace('{{EXAMPLE_NAME}}', (ExampleName)).Replace('{{ADMIN_USER}}', (Enc $SITE.site.adminUser)).Replace('{{DATE}}', $stamp)
     $body = [regex]::Replace($body, '\{\{DIAGRAM:(\w+)\}\}', [Text.RegularExpressions.MatchEvaluator]{ param($mm) '<figure class="fig">' + (Get-Diagram $mm.Groups[1].Value $lang) + '</figure>' })
+    $body = [regex]::Replace($body, '\{\{CODE:(\w+)\}\}', [Text.RegularExpressions.MatchEvaluator]{ param($mm) CodeFile $mm.Groups[1].Value })
     $u = $UI[$lang]
     $navHtml = ''
     foreach ($g in $Nav) {
@@ -244,13 +256,14 @@ for ($k = 0; $k -lt $Flat.Count; $k++) {
 <!doctype html>
 <html lang="$($u.lang)" data-l="$lang"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>$title - ThinkLab Quick Install</title><link rel="stylesheet" href="../assets/style.css"><script>try{var t=localStorage.getItem('tl-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script></head><body>
-<div class="global"><div class="in"><span>ThinkLab Quick Install</span><span class="sp"></span><a href="menu.html">$($u.top[0])</a><a href="recuperacao.html">$($u.top[1])</a><a href="licencas.html">$($u.top[2])</a><a href="../$($u.otherLang)/$($pg.Id).html">$($u.other)</a><button id="th" type="button" title="Dark / Light">&#9680;</button></div></div>
+<div class="global"><div class="in"><span>ThinkLab Quick Install</span><span class="sp"></span><a href="menu.html">$($u.top[0])</a><a href="recuperacao.html">$($u.top[1])</a><a href="licencas.html">$($u.top[2])</a><a href="../$($u.otherLang)/$($pg.Id).html">$($u.other)</a><button id="th" class="thb" type="button" title="Dark / Light">&#9680;</button></div></div>
+<div class="rail"><a$(if ($lang -eq 'pt') { ' class="on"' }) href="../pt/$($pg.Id).html">PT</a><i></i><a$(if ($lang -eq 'en') { ' class="on"' }) href="../en/$($pg.Id).html">EN</a><button class="thb" type="button" title="Dark / Light">&#9680;</button></div>
 <div class="band"><div class="in"><a class="brand" href="index.html"><span class="mark"><i></i></span>ThinkLab</a><nav><a href="index.html">$(if($lang -eq 'pt'){'In&iacute;cio'}else{'Start'})</a><a href="instalar.html">$(if($lang -eq 'pt'){'Passo a passo'}else{'Step by step'})</a><a href="maquinas.html">$(if($lang -eq 'pt'){'M&aacute;quinas'}else{'Machines'})</a><a href="recuperacao.html">$(if($lang -eq 'pt'){'Recupera&ccedil;&atilde;o'}else{'Recovery'})</a><a href="arquivos.html">$(if($lang -eq 'pt'){'Arquivos'}else{'Files'})</a></nav></div></div>
 <div class="search"><input id="q" type="search" placeholder="$($u.search)" data-none="$($u.noresult)" autocomplete="off"><div id="res" class="results"></div></div>
 <div class="wrap"><aside class="side">$navHtml</aside><main>
 $body
 <div class="pager">$prev$next</div>
-<div class="foot">$($u.updated) $stamp.</div>
+<div class="foot">$($u.updated) $stamp.<span class="pill"><i></i>SHA-256 &middot; Verify-Stick.ps1</span></div>
 </main></div>
 <script src="../assets/search-index.js"></script><script src="../assets/app.js"></script></body></html>
 "@
