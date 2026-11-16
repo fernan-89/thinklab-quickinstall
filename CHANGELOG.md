@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.0] - 2026-11-16
+
+* Design tokens (`config/design.json`): Material-style solid palettes, dark and light, per interface (menu, docs, desktop, diagram).
+* Isometric exploded-view diagrams (`Diagrams.ps1`): product overview, machine x system matrix, platform integration; inline SVG, light/dark, PT/EN.
+* Manual: one "paper" per enabled installation (Windows, Linux, recovery) plus the general paper of the stick (`Build-Papers.ps1`); numbered sections, halftone background, new identity layer (`docs-src/theme.css`).
+* Wallpapers: own line-art blueprints per machine type (`Blueprint.ps1`, tower / laptop / tiny, dark and light).
+* `manual_art.py` + `title_mark.py`: build exploded-view wallpapers from line art you supply locally (figures, reference wallpapers); every vendor-specific input (art, tab, names) lives in the private library and is never committed.
+* Tests load System.Drawing before parsing; `__pycache__` ignored.
+
 ## [1.0.0] - unreleased
 
 First public version.

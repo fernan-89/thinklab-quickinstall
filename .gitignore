@@ -11,3 +11,4 @@ library/
 *.zip
 *.log
 .vscode/
+__pycache__/

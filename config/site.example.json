@@ -10,7 +10,7 @@
   },
   "machines": [
     {
-      "code": "WS1", "nameCode": "WS1", "label": "WS1", "fullName": "Workstation 1 (tower)",
+      "code": "WS1", "blueprint": "tower", "nameCode": "WS1", "label": "WS1", "fullName": "Workstation 1 (tower)",
       "specs": "Example: 8-core CPU, 64 GB RAM, 512 GB NVMe, discrete GPU",
       "profile": "Full", "profileFile": "Dev+Docker+Games", "role": "F", "family": "Tower", "wallpapers": [],
       "windows": [
@@ -27,7 +27,7 @@
       "linux": { "alma": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "rhel": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "centos": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "ubuntu": { "server": [ "EN" ] } }
     },
     {
-      "code": "LT1", "nameCode": "LT1", "label": "LT1", "fullName": "Laptop 1 (developer)",
+      "code": "LT1", "blueprint": "laptop", "nameCode": "LT1", "label": "LT1", "fullName": "Laptop 1 (developer)",
       "specs": "Example: 14-core CPU, 64 GB RAM, 2 TB NVMe",
       "profile": "DevBasic", "profileFile": "DevBasico", "role": "D", "family": "Laptop", "wallpapers": [],
       "windows": [
@@ -41,7 +41,7 @@
       "linux": { "alma": { "desktop": [ "EN", "PT" ], "server": [] }, "rhel": { "desktop": [ "EN", "PT" ], "server": [] }, "centos": { "desktop": [ "EN", "PT" ], "server": [] } }
     },
     {
-      "code": "MINI1", "nameCode": "MN1", "label": "MINI1", "fullName": "Mini PC (office, 4 GB)",
+      "code": "MINI1", "blueprint": "tiny", "nameCode": "MN1", "label": "MINI1", "fullName": "Mini PC (office, 4 GB)",
       "specs": "Example: low-power CPU, 4 GB RAM, 256 GB SSD",
       "profile": "Office", "profileFile": "Leve", "role": "O",
       "windows": [
@@ -53,7 +53,7 @@
       "linux": { "alma": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "rhel": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "centos": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "ubuntu": { "server": [ "EN" ] } }
     },
     {
-      "code": "LT2", "nameCode": "LT2", "label": "LT2", "fullName": "Laptop 2 (office)",
+      "code": "LT2", "blueprint": "laptop", "nameCode": "LT2", "label": "LT2", "fullName": "Laptop 2 (office)",
       "specs": "Example business laptop",
       "profile": "Office", "profileFile": "Basico", "role": "O",
       "windows": [

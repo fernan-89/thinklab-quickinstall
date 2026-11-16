@@ -4,6 +4,7 @@
 #   3. PRIVACY: no personal / machine identifiers in any tracked or staged file (patterns: built-in generic ones + config\privacy-terms.local.txt)
 param([switch]$SkipBuild)
 $ErrorActionPreference = 'Stop'
+Add-Type -AssemblyName System.Drawing   # Blueprint.ps1 declares a class with System.Drawing members: load it before parsing
 $repo = (Resolve-Path "$PSScriptRoot\..").Path; Set-Location $repo
 $fail = 0
 function Fail($m) { Write-Host "FAIL  $m" -ForegroundColor Red; $script:fail++ }

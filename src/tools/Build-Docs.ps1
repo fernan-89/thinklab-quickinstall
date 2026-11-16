@@ -11,6 +11,7 @@ param(
 )
 . "$PSScriptRoot\QI.Common.ps1"$ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Web
+. "$PSScriptRoot\Diagrams.ps1"
 $SITE = Get-Site $SitePath; $CAT = Get-Catalog; $SW = Get-Software
 function Dec($s) { [System.Net.WebUtility]::HtmlDecode($s) }
 function Enc($s) { [System.Net.WebUtility]::HtmlEncode([string]$s) }
@@ -19,7 +20,8 @@ function Enc($s) { [System.Net.WebUtility]::HtmlEncode([string]$s) }
 $Nav = @(
   @{ Group = @{ pt = 'In&iacute;cio'; en = 'Start' }; Items = @(
       @{ Id = 'index';      T = @{ pt = 'Vis&atilde;o geral'; en = 'Overview' } },
-      @{ Id = 'instalar';   T = @{ pt = 'Passo a passo'; en = 'Step by step' } } ) },
+      @{ Id = 'instalar';   T = @{ pt = 'Passo a passo'; en = 'Step by step' } },
+      @{ Id = 'plataforma'; T = @{ pt = 'Integra&ccedil;&atilde;o ThinkLab'; en = 'ThinkLab integration' } } ) },
   @{ Group = @{ pt = 'Instala&ccedil;&atilde;o'; en = 'Installation' }; Items = @(
       @{ Id = 'menu';       T = @{ pt = 'Menu de boot'; en = 'Boot menu' } },
       @{ Id = 'maquinas';   T = @{ pt = 'M&aacute;quinas e kits'; en = 'Machines and kits' } },
@@ -34,6 +36,14 @@ $Nav = @(
       @{ Id = 'arquivos';   T = @{ pt = 'Arquivos do pen-drive'; en = 'Files on the stick' } },
       @{ Id = 'manutencao'; T = @{ pt = 'Manuten&ccedil;&atilde;o'; en = 'Maintenance' } } ) }
 )
+# one paper per enabled installation (generated from the catalog) + the general paper of the stick
+function Enc2($s) { [System.Net.WebUtility]::HtmlEncode([string]$s) }
+. "$PSScriptRoot\Build-Papers.ps1"
+$Papers = @(Get-PaperIndex); $PaperById = @{}; foreach ($p in $Papers) { $PaperById[$p.Id] = $p }
+$Nav[0].Items += @{ Id = 'papel-geral'; T = $Papers[0].Title }
+$Nav += @{ Group = @{ pt = 'Instala&ccedil;&otilde;es: Windows'; en = 'Installs: Windows' }; Items = @($Papers | Where-Object { $_.Group -eq 'win' } | ForEach-Object { @{ Id = $_.Id; T = $_.Title } }) }
+$Nav += @{ Group = @{ pt = 'Instala&ccedil;&otilde;es: Linux'; en = 'Installs: Linux' }; Items = @($Papers | Where-Object { $_.Group -eq 'linux' } | ForEach-Object { @{ Id = $_.Id; T = $_.Title } }) }
+$Nav += @{ Group = @{ pt = 'Ferramentas de recupera&ccedil;&atilde;o'; en = 'Recovery tools' }; Items = @($Papers | Where-Object { $_.Group -eq 'rec' } | ForEach-Object { @{ Id = $_.Id; T = $_.Title } }) }
 $Flat = @(); foreach ($g in $Nav) { foreach ($i in $g.Items) { $Flat += $i } }
 $UI = @{
   pt = @{ lang = 'pt-BR'; search = 'Pesquisar na documenta&ccedil;&atilde;o'; prev = 'Anterior'; next = 'Pr&oacute;ximo'; other = 'English'; otherLang = 'en'; updated = 'Esta p&aacute;gina foi gerada em'; sub = 'Kit de instala&ccedil;&atilde;o e recupera&ccedil;&atilde;o'; top = @('Instalar', 'Recuperar', 'Refer&ecirc;ncia'); noresult = 'Nenhum resultado' }
@@ -156,9 +166,13 @@ function FilesTable($lang) {
 
 # ------------------------------------------------------------------ assets
 New-Item -ItemType Directory -Force "$Out\assets", "$Out\pt", "$Out\en" | Out-Null
-@'
-:root{--nav:#000;--band:#1e1e1e;--bg:#111;--surface:#1d1d1d;--field:#2b2b2b;--text:#f3f3f3;--muted:#a8a8a8;--border:#3a3a3a;--link:#5aa7ff;--brand:#e95420;--ok:#4fd067;--warn:#f0b24a;--bad:#ffb4b4;--tint:#16202d}
-:root[data-theme=light]{--nav:#111;--band:#262626;--bg:#f3f3f3;--surface:#fff;--field:#e9e9e9;--text:#111;--muted:#666;--border:#d0d0d0;--link:#0066cc;--ok:#0e8420;--warn:#8a5300;--bad:#a3121f;--tint:#eaf2fb}
+function PalVars($scheme) {
+  $p = Get-Palette 'docs' $scheme
+  "--nav:$($p.navBar);--band:$($p.surface);--bg:$($p.background);--surface:$($p.surface);--field:$($p.surfaceHigh);--text:$($p.onSurface);--muted:$($p.onSurfaceVariant);--border:$($p.outline);--link:$($p.secondary);--brand:$($p.primary);--ok:$($p.tertiary);--warn:$($p.warning);--bad:$($p.error);--tint:$($p.secondaryContainer);--nub:$($p.nub);--on-brand:$($p.onPrimary)"
+}
+$palCss = ":root{$(PalVars 'dark')}`n:root[data-theme=light]{$(PalVars 'light')}"
+(@'
+__PALETTE__
 *{box-sizing:border-box}html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 'Ubuntu Sans',Ubuntu,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
 a{color:var(--link);text-decoration:none}a:hover{text-decoration:underline}
@@ -185,7 +199,8 @@ main p,main li{max-width:78ch}main .lead{font-size:1.25rem;font-weight:500;margi
 .foot{border:1px solid var(--border);border-left:4px solid var(--link);padding:12px 16px;margin:2rem 0;color:var(--muted);font-size:.92rem}
 .badge{display:inline-block;padding:.05em .5em;border-radius:3px;font-size:.78rem;background:var(--field);margin-right:.3rem}.badge.ok{color:var(--ok)}.badge.warn{color:var(--warn)}.badge.bad{color:var(--bad)}
 @media (max-width:860px){.wrap{grid-template-columns:1fr;gap:16px}.side{display:none}main h1{font-size:2rem}}
-'@ | Set-Content "$Out\assets\style.css" -Encoding UTF8
+'@).Replace('__PALETTE__', $palCss) | Set-Content "$Out\assets\style.css" -Encoding UTF8
+Add-Content "$Out\assets\style.css" ($script:DiagramCss + "`nfigure.fig{margin:0}`n" + (Get-Content (Join-Path $Src 'theme.css') -Raw -Encoding UTF8)) -Encoding UTF8
 @'
 (function(){
   try{var th=localStorage.getItem('tl-theme');if(th)document.documentElement.setAttribute('data-theme',th)}catch(e){}
@@ -205,12 +220,17 @@ $stamp = Get-Date -Format 'yyyy-MM-dd HH:mm'
 $search = @{ pt = @(); en = @() }
 for ($k = 0; $k -lt $Flat.Count; $k++) {
   $pg = $Flat[$k]; $srcFile = Join-Path $Src "$($pg.Id).html"
-  if (-not (Test-Path $srcFile)) { Write-Warning "missing source: $srcFile"; continue }
-  $raw = [IO.File]::ReadAllText($srcFile, [Text.Encoding]::UTF8)
+  $dyn = $PaperById[$pg.Id]
+  if (-not $dyn -and -not (Test-Path $srcFile)) { Write-Warning "missing source: $srcFile"; continue }
+  $raw = if ($dyn) { $null } else { [IO.File]::ReadAllText($srcFile, [Text.Encoding]::UTF8) }
   foreach ($lang in 'pt', 'en') {
-    $m = [regex]::Match($raw, "(?s)<section lang=""$lang"">(.*?)</section>")
-    if (-not $m.Success) { Write-Warning "no $lang section in $($pg.Id)"; continue }
-    $body = $m.Groups[1].Value.Replace('{{MENU_TABLE}}', (MenuTable $lang)).Replace('{{KITS_TABLE}}', (KitsTable $lang)).Replace('{{FILES_TABLE}}', (FilesTable $lang)).Replace('{{MACHINE_CARDS}}', (Cards $lang)).Replace('{{DRIVERS_TABLE}}', (DriversTable $lang)).Replace('{{SOFTWARE_TABLE}}', (SoftwareTable $lang)).Replace('{{LINUX_TABLE}}', (LinuxTable $lang)).Replace('{{MACHINE_LIST}}', (MachineList)).Replace('{{NAME_PATTERN}}', (NamePattern)).Replace('{{EXAMPLE_NAME}}', (ExampleName)).Replace('{{ADMIN_USER}}', (Enc $SITE.site.adminUser)).Replace('{{DATE}}', $stamp)
+    if ($dyn) { $secHtml = Get-PaperBody $dyn $lang } else {
+      $m = [regex]::Match($raw, "(?s)<section lang=""$lang"">(.*?)</section>")
+      if (-not $m.Success) { Write-Warning "no $lang section in $($pg.Id)"; continue }
+      $secHtml = $m.Groups[1].Value
+    }
+    $body = $secHtml.Replace('{{MENU_TABLE}}', (MenuTable $lang)).Replace('{{KITS_TABLE}}', (KitsTable $lang)).Replace('{{FILES_TABLE}}', (FilesTable $lang)).Replace('{{MACHINE_CARDS}}', (Cards $lang)).Replace('{{DRIVERS_TABLE}}', (DriversTable $lang)).Replace('{{SOFTWARE_TABLE}}', (SoftwareTable $lang)).Replace('{{LINUX_TABLE}}', (LinuxTable $lang)).Replace('{{MACHINE_LIST}}', (MachineList)).Replace('{{NAME_PATTERN}}', (NamePattern)).Replace('{{EXAMPLE_NAME}}', (ExampleName)).Replace('{{ADMIN_USER}}', (Enc $SITE.site.adminUser)).Replace('{{DATE}}', $stamp)
+    $body = [regex]::Replace($body, '\{\{DIAGRAM:(\w+)\}\}', [Text.RegularExpressions.MatchEvaluator]{ param($mm) '<figure class="fig">' + (Get-Diagram $mm.Groups[1].Value $lang) + '</figure>' })
     $u = $UI[$lang]
     $navHtml = ''
     foreach ($g in $Nav) {

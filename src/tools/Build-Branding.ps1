@@ -6,6 +6,7 @@
 param([string]$SitePath, [string]$Out = (Join-Path (Resolve-Path "$PSScriptRoot\..\..").Path 'build\USB'))
 . "$PSScriptRoot\QI.Common.ps1"
 Add-Type -AssemblyName System.Drawing
+. "$PSScriptRoot\Blueprint.ps1"
 $ErrorActionPreference = 'Stop'
 $site = Get-Site $SitePath
 function C($hex, $a = 255) { $h = $hex.TrimStart('#'); [Drawing.Color]::FromArgb($a, [Convert]::ToInt32($h.Substring(0,2),16), [Convert]::ToInt32($h.Substring(2,2),16), [Convert]::ToInt32($h.Substring(4,2),16)) }
@@ -67,5 +68,10 @@ foreach ($m in $site.machines) {
     $gg.DrawString('ThinkLab', $fSmall, $muted, 310, 1960); Mark $gg 3420 1830 130
     $gg.Dispose(); Save $bm (Join-Path $dir "ThinkLab-$($family -replace '[^A-Za-z0-9]','')-$($m.label -replace '[^A-Za-z0-9]','').png"); $n++
   }
+}
+# exploded-view "blueprint" wallpapers per machine, dark and light (own line art; see Blueprint.ps1)
+foreach ($m in $site.machines) {
+  $dir = Join-Path $Out "Wallpapers\$($m.code)"; $lbl = $m.label -replace '[^A-Za-z0-9]', ''
+  foreach ($sch in 'dark', 'light') { New-Blueprint -Machine $m -Scheme $sch -Out (Join-Path $dir "ThinkLab-$lbl-Blueprint-$($sch.Substring(0,1).ToUpper() + $sch.Substring(1)).png"); $n++ }
 }
 "Build-Branding: OEM logo + $n wallpapers -> $Out"

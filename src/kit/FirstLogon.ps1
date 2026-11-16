@@ -163,7 +163,8 @@ try {
     foreach ($f in @($kk.machine) + @($kk.wallpapers)) {
       if ($f -and (Test-Path (Join-Path $wall $f))) { New-Item -ItemType Directory -Force "$dest\$f" | Out-Null; Copy-Item (Join-Path $wall "$f\*") "$dest\$f" -Recurse -Force; Write-Host "wallpapers: $f" }
     }
-    $def = Get-ChildItem "$dest\$($kk.machine)" -Filter 'ThinkLab-*-Dark.png' -ErrorAction SilentlyContinue | Select-Object -First 1
+    $def = Get-ChildItem "$dest\$($kk.machine)" -Filter 'ThinkLab-*-Blueprint-Dark.png' -ErrorAction SilentlyContinue | Select-Object -First 1   # exploded-view blueprint first
+    if (-not $def) { $def = Get-ChildItem "$dest\$($kk.machine)" -Filter 'ThinkLab-*-Dark.png' -ErrorAction SilentlyContinue | Select-Object -First 1 }
     if ($def) {
       # default wallpaper for this user and for every new profile (Default user hive)
       Set-ItemProperty 'HKCU:\Control Panel\Desktop' Wallpaper $def.FullName; Set-ItemProperty 'HKCU:\Control Panel\Desktop' WallpaperStyle '10'; Set-ItemProperty 'HKCU:\Control Panel\Desktop' TileWallpaper '0'

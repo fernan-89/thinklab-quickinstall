@@ -93,3 +93,15 @@ function Get-LinuxKits($Site, $Catalog) {
   }
   $out
 }
+
+# ---- design tokens (config\design.json): Material Design roles, solid colours, dark + light per interface ----
+function Get-Design { Read-Json (Join-Path $script:RepoRoot 'config\design.json') }
+# Merged palette for one interface and scheme (dark|light) as an ordered hashtable role -> #RRGGBB
+function Get-Palette([string]$Interface, [string]$Scheme) {
+  $d = Get-Design; $out = [ordered]@{}
+  foreach ($pr in $d.base.$Scheme.PSObject.Properties) { $out[$pr.Name] = $pr.Value }
+  $iface = $d.interfaces.$Interface
+  if ($iface -and $iface.$Scheme) { foreach ($pr in $iface.$Scheme.PSObject.Properties) { $out[$pr.Name] = $pr.Value } }
+  foreach ($pr in $d.seed.PSObject.Properties) { if (-not $out.Contains("seed-$($pr.Name)")) { $out["seed-$($pr.Name)"] = $pr.Value } }
+  $out
+}
