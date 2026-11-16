@@ -48,13 +48,23 @@ timezone $tz --utc
 $net
 $(if ($k.RepoUrl) { "url --url=$($k.RepoUrl)/BaseOS/x86_64/os/`nrepo --name=AppStream --baseurl=$($k.RepoUrl)/AppStream/x86_64/os/" })
 firstboot --enable
+# written by %pre below: hides the install stick from the list of target disks
+%include /tmp/tl-ignore.ks
 
-%packages
+%packages --ignoremissing
 $env
 git
 curl
 vim-enhanced
-htop
+%end
+
+%pre
+# never offer the install stick as a target: find the disk that carries the partition labelled Ventoy
+d=''
+for n in `$(lsblk -dno NAME 2>/dev/null); do
+  if lsblk -no LABEL /dev/`$n 2>/dev/null | grep -qx Ventoy; then d=`$n; break; fi
+done
+if [ -n "`$d" ]; then echo "ignoredisk --drives=`$d" > /tmp/tl-ignore.ks; else : > /tmp/tl-ignore.ks; fi
 %end
 $(if ($k.Kind -eq 'server') { "`n%post --log=/root/ks-post-netdata.log`ncat > /usr/local/sbin/netdata-firstboot.sh <<'EOS'`n$($ndScript.TrimEnd())`nEOS`nchmod 755 /usr/local/sbin/netdata-firstboot.sh`ncat > /etc/systemd/system/netdata-firstboot.service <<'EOS'`n$($ndUnit.TrimEnd())`nEOS`nsystemctl enable netdata-firstboot.service`n%end" })
 "@
@@ -76,6 +86,10 @@ autoinstall:
   version: 1
   refresh-installer:
     update: no
+  # Ventoy maps the stick's first partition as a device-mapper node (VentoyPart); the installer's disk probe crashes on it
+  # ("Probing for devices to install to failed"), so drop it before the probe. The ISO itself stays mapped (dm "ventoy").
+  early-commands:
+    - dmsetup remove VentoyPart || true
   locale: en_US.UTF-8
   timezone: $tz
   interactive-sections:

@@ -76,8 +76,9 @@ foreach ($m in $site.machines) {
   $dir = Join-Path $Out "Wallpapers\$($m.code)"; $lbl = $m.label -replace '[^A-Za-z0-9]', ''
   foreach ($bs in $bpStyles) { New-Blueprint -Machine $m -Scheme $bs[1] -Style $bs[2] -Out (Join-Path $dir "ThinkLab-$lbl-$($bs[0]).png"); $n++ }
 }
-$sysArt = [ordered]@{ W10 = @('Windows 10', 'laptop'); W11 = @('Windows 11', 'laptop'); L21 = @('Windows 10 LTSC 2021', 'tiny'); I10 = @('Windows 10 IoT', 'tiny-fanless'); L24 = @('Windows 11 LTSC 2024', 'tiny'); S19 = @('Windows Server 2019', 'tower') }
-foreach ($lx in (Get-Catalog).linux) { $sysArt[$lx.id] = @((($lx.label -split ' - ')[0] -replace '\s*\([^)]*\)', ''), $(if ($lx.id -eq 'ubuntu') { 'tower' } else { 'laptop' })) }
+# systems get architecture diagrams instead of hardware: layered client, datacenter (server), node + containers (linux)
+$sysArt = [ordered]@{ W10 = @('Windows 10', 'sys-client'); W11 = @('Windows 11', 'sys-client'); L21 = @('Windows 10 LTSC 2021', 'sys-client'); I10 = @('Windows 10 IoT', 'sys-client'); L24 = @('Windows 11 LTSC 2024', 'sys-client'); S19 = @('Windows Server 2019', 'sys-server') }
+foreach ($lx in (Get-Catalog).linux) { $sysArt[$lx.id] = @((($lx.label -split ' - ')[0] -replace '\s*\([^)]*\)', ''), 'sys-linux') }
 $fakeM = [pscustomobject]@{ label = 'BASE'; fullName = 'BASE' }
 foreach ($sys in $sysArt.Keys) {
   foreach ($bs in $bpStyles) { New-Blueprint -Machine $fakeM -Scheme $bs[1] -Style $bs[2] -Type $sysArt[$sys][1] -Label $sysArt[$sys][0] -Out (Join-Path $Out "Wallpapers\BASE\ThinkLab-$sys-$($bs[0]).png"); $n++ }

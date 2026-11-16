@@ -116,7 +116,9 @@ function Install-Item($it) {
   switch ($kind) {
     'msi' { [void](Run 'msiexec.exe' "/i `"$($file.FullName)`" /qn /norestart" 20) }
     'appx' {
-      try { Add-AppxPackage -Path $file.FullName -ForceUpdateFromAnyVersion -ErrorAction Stop; Write-Host "installed $($file.Name)" }
+      # framework packages the bundle needs (missing on a fresh Windows 10): listed in software.json as "dependencies"
+      $deps = @(); if ($it.PSObject.Properties.Name -contains 'dependencies') { foreach ($dp in @($it.dependencies)) { $deps += @(Get-ChildItem -Path (Join-Path $sw $dp) -ErrorAction SilentlyContinue | ForEach-Object FullName) } }
+      try { if ($deps.Count) { Add-AppxPackage -Path $file.FullName -DependencyPath $deps -ForceUpdateFromAnyVersion -ErrorAction Stop } else { Add-AppxPackage -Path $file.FullName -ForceUpdateFromAnyVersion -ErrorAction Stop }; Write-Host "installed $($file.Name) (+$($deps.Count) dependencies)" }
       catch { Write-Warning "appx install failed ($($_.Exception.Message))"; if ($wg) { [void](Winget $wg $null) } }
     }
     'zip' {

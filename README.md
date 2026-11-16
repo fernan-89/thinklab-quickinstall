@@ -8,7 +8,7 @@ machines that are named, installed the same way every time, and described in a s
 |---|---|
 | **Windows 10 / 11 / LTSC / IoT / Server 2019** | One answer file per machine *and language* (EN-US / PT-BR for workstations; servers are English only): edition, generic install key, computer name, time zone and a user are set; **only the disk choice stays manual** (nothing is wiped unasked). |
 | **Post-install** (`FirstLogon.ps1`) | Profile driven (`Full`, `DevBasic`, `Office`, `Base`, `Server`): drivers (`pnputil`), Office from an offline Click-to-Run source, software from the stick or `winget`, an `inventory.json`, and a **forced password change** at the next logon. |
-| **BASE option** | Every Windows ISO also has a `BASE_*` template: only that Windows + its matching Office. Linux has `BASE_*` kickstarts / autoinstall too. |
+| **BASE option** | Every Windows ISO also has a `BASE_*` template: only that Windows + its matching Office (Windows Server: the system + Netdata). Linux has `BASE_*` kickstarts / autoinstall too. |
 | **Linux** | AlmaLinux 10 (kickstart: Workstation EN/PT, Server EN only), Ubuntu Server (autoinstall), openSUSE Leap (interactive Agama). |
 | **Recovery / Live** | Hiren's BootCD PE (Windows Live) + ThinkLab tools injected into it, SystemRescue, GParted Live, Clonezilla Live, MemTest86+. |
 | **Menu + docs** | Ventoy TreeView menu with a ThinkLab theme (Canonical/Vanilla dark, same tokens as `thinklab-web`) and an **offline bilingual documentation site** on the stick. |

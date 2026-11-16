@@ -66,7 +66,7 @@ function Cards($lang) {
     $p = $SITE.site.prefix
     $h += "<div class=""card""><h3>$(Enc $m.fullName)</h3><p>$(Enc $m.specs). $(if ($lang -eq 'pt') { 'Perfil' } else { 'Profile' }) <b>$(Enc $m.role)</b> ($(Enc $m.profile)).</p></div>"
   }
-  $h += "<div class=""card""><h3>BASE ($(if ($lang -eq 'pt') { 'qualquer m&aacute;quina' } else { 'any machine' }))</h3><p>$(if ($lang -eq 'pt') { 'S&oacute; o sistema e o Office correspondente, sem drivers nem programas e com nome de computador autom&aacute;tico.' } else { 'Only the system and its matching Office, no drivers or programs, with an automatic computer name.' })</p></div>"
+  $h += "<div class=""card""><h3>BASE ($(if ($lang -eq 'pt') { 'qualquer m&aacute;quina' } else { 'any machine' }))</h3><p>$(if ($lang -eq 'pt') { 'S&oacute; o sistema e o Office correspondente (nos servidores, o sistema e o Netdata), sem drivers nem outros programas e com nome de computador autom&aacute;tico.' } else { 'Only the system and its matching Office (on servers, the system and Netdata), no drivers or other programs, with an automatic computer name.' })</p></div>"
   "<div class=""cards"">$h</div>"
 }
 function DriversTable($lang) {

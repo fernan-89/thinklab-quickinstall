@@ -7,9 +7,11 @@
 param(
   [Parameter(Mandatory)][string]$Stick,
   [string]$Library,
-  [string]$Build = (Join-Path (Resolve-Path "$PSScriptRoot\..\..").Path 'build\USB')
+  [string]$Build
 )
 . "$PSScriptRoot\QI.Common.ps1"
+# default resolved here, not in param(): $PSScriptRoot is still empty while parameter defaults are evaluated
+if (-not $Build) { $Build = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) 'build\USB' }
 $ErrorActionPreference = 'Stop'
 $Stick = $Stick.TrimEnd('\'); if ($Stick.Length -eq 1) { $Stick += ':' }
 $v = Get-Volume -DriveLetter $Stick.Substring(0, 1) -ErrorAction Stop

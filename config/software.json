@@ -2,7 +2,7 @@
   "_comment": "Software catalog + profiles. 'filter' is matched inside the stick's Software\\ folder; {LANGTAG} becomes en-US or pt-BR. If no installer is found the winget id is used (internet needed).",
   "items": [
     { "id": "kasperskyprem", "name": "Kaspersky Premium",       "filter": "Kaspersky_Premium_*_{LANGTAG}.exe", "args": "/s /pEULA=1 /pPRIVACYPOLICY=1 /pKSN=1", "minutes": 30 },
-    { "id": "kasperskypm",   "name": "Kaspersky Password Manager", "filter": "Kaspersky_Password-Manager_*_{LANGTAG}.exe", "args": "/s", "minutes": 15 },
+    { "id": "kasperskypm",   "name": "Kaspersky Password Manager", "filter": "Kaspersky_Password-Manager_*_{LANGTAG}.exe", "args": "/s /pAGREETOEULA=1 /pAGREETOPRIVACYPOLICY=1", "minutes": 15 },
     { "id": "kasperskyvpn",  "name": "Kaspersky VPN Secure Connection", "filter": "Kaspersky_VPN_*_{LANGTAG}.exe", "args": "/s", "minutes": 15 },
     { "id": "netdata",  "name": "Netdata (monitoring)",      "filter": "Netdata_x64_*_Multi.msi", "kind": "msi", "minutes": 20 },
     { "id": "claude",   "name": "Claude",                    "filter": "Anthropic_Claude-Setup-WebStub_*.exe", "args": "", "minutes": 10 },
@@ -10,7 +10,7 @@
     { "id": "reader",   "name": "Adobe Acrobat Reader",      "filter": "Adobe_Acrobat-Reader-Downloader_*.exe", "args": "/sAll /rs /rps /msi EULA_ACCEPT=YES", "minutes": 8, "killOnTimeout": true,
       "winget": "Adobe.Acrobat.Reader.64-bit", "wingetLocale": "pt-BR", "preferWingetFor": [ "PT" ] },
     { "id": "firefoxdev", "name": "Firefox Developer Edition", "filter": "Mozilla_Firefox-DeveloperEdition_x64_latest-*_{LANGTAG}.exe", "args": "/S", "minutes": 10, "winget": "Mozilla.Firefox.DeveloperEdition" },
-    { "id": "terminal", "name": "Windows Terminal",          "filter": "Microsoft_Windows-Terminal_x64_*.msixbundle", "kind": "appx", "winget": "Microsoft.WindowsTerminal" },
+    { "id": "terminal", "name": "Windows Terminal",          "filter": "Microsoft_Windows-Terminal_x64_*.msixbundle", "kind": "appx", "dependencies": [ "Microsoft_VCLibs-Desktop_x64_*.appx", "Microsoft_UI-Xaml_x64_*.appx" ], "winget": "Microsoft.WindowsTerminal" },
     { "id": "ps7",      "name": "PowerShell 7",              "kind": "zip", "filter": "Microsoft_PowerShell_x64_*_Multi.zip", "extractTo": "%ProgramFiles%\\PowerShell\\7", "addToPath": true, "winget": "Microsoft.PowerShell" },
     { "id": "jdk",      "name": "Oracle JDK",                "filter": "Oracle_JDK_x64_*_Multi.exe", "args": "/s", "minutes": 15 },
     { "id": "node",     "name": "Node.js",                   "kind": "msi", "filter": "OpenJS_Node.js_x64_*_Multi.msi" },

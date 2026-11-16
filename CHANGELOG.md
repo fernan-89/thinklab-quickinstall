@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.1] - 2026-11-16
+
+* System wallpapers are architecture diagrams in the same line art: layered client stack with a version timeline, datacenter (servers, storage, switch, firewall, clients, monitoring) and Linux node with containers and services.
+* Ubuntu autoinstall: remove Ventoy's `VentoyPart` device-mapper node before the installer probes the disks (fixes "Probing for devices to install to failed").
+* Kickstart (AlmaLinux / RHEL / CentOS): `%packages --ignoremissing` and no `htop` (not on the install media); a `%pre` step hides the install stick from the target disks (`ignoredisk`).
+* Windows Terminal: framework dependencies (VCLibs Desktop, UI.Xaml 2.8) installed with the bundle on Windows 10.
+* Kaspersky Password Manager: documented silent-install switches.
+* Test plan matrix in `docs/TESTING.md`.
+* `Publish-Stick.ps1` without `-Build` now finds `build/USB` (the default used to resolve to the drive root).
+* Docs: the BASE kit of a server is the system plus Netdata.
+
 ## [1.2.0] - 2026-11-16
 
 * Boot menu redesign: two themes (`thinklab-dark`, default, and `thinklab-light`; switch with F5 > Theme Select), palette from `config/design.json`, halftone background, numbered sections, isometric motif.

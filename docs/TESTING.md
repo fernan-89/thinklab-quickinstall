@@ -31,3 +31,27 @@ Checks that every script parses, builds the kit from `config\site.example.json`,
 - Retail Office and the Kaspersky products need your own licences/sign-in after install.
 - Vendor installers (Kaspersky, Adobe) are not redistributed; put them in `Software\` (see `docs-src\software.html`).
 - Windows Terminal comes from the local `.msixbundle` (falls back to winget); on a fresh Windows 10 without dependencies it can still fail and only warns.
+
+## Test plan (matrix)
+
+Run every row after a change that touches it; record the result (date, pass/fail, note) in your private notes, not here.
+
+| ID | Area | What is installed / booted | Pass when |
+|---|---|---|---|
+| M1 | Boot menu | dark theme, light theme (F5 > Theme Select), tips | fonts load, rows and tip readable, both themes switch |
+| W1 | Windows 10, machine kit, PT-BR | office-type profile + extra software | log ends with `Done`; drivers, Office in PT only, profile software, extra software, OEM info, tape wallpaper |
+| W2 | Windows 11, BASE kit, EN-US | system + Office only | log ends with `Done`; no drivers/software; BASE wallpapers; automatic computer name |
+| W3 | Windows 11, machine kit, EN-US | developer profile, driver pack | log ends with `Done`; pack extracted, dev tools present |
+| W4 | Lite editions (LTSC / IoT), both languages | machine kit | Setup picks the image; log ends with `Done` |
+| S1 | Windows Server, Standard | server profile | stick mounted by the first command; Netdata installed |
+| S2 | Windows Server, Datacenter | server profile | same as S1, Datacenter edition |
+| L1 | Ubuntu Server autoinstall | server | interactive sections asked; Netdata unit enabled and service up after first boot |
+| L2 | AlmaLinux kickstart, server, EN | server | kickstart applied; Netdata up after first boot |
+| L3 | AlmaLinux kickstart, workstation, PT-BR | desktop | language, keyboard and hostname applied |
+| L4 | CentOS Stream (network install) | workstation | installer reaches the summary with the kickstart values |
+| L5 | RHEL (ISO supplied by you) | workstation / server | same as L2 / L3 |
+| L6 | openSUSE Leap | interactive | installer starts |
+| R1-R5 | Recovery ISOs | WinPE, SystemRescue, GParted, Clonezilla, MemTest86+ | each boots to its desktop / menu; PE extras present in WinPE |
+| K1 | Linux templates (static) | `ksvalidator -v RHEL10` (pykickstart) on every `.ks`, `bash -n` on its `%pre`, YAML parse of every autoinstall file | no errors, LF line endings |
+| I1 | Integrity | `New-Manifest.ps1` then `Verify-Stick.ps1` | no mismatch |
+| D1 | Repository | `tests\Test-Repo.ps1` | all checks pass |
