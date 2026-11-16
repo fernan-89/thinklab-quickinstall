@@ -18,10 +18,13 @@ First public version.
 * Winget/installer watchdog: installers that finish but keep a window open no longer block the post-install.
 * Netdata monitoring on every server kit: Windows Server (local signed MSI from `Software\`) and Linux servers (AlmaLinux/Ubuntu: one-shot first-boot unit that runs the official kickstart once the network is up).
 * Software filters fall back to a `_Multi` installer and pick the newest version when several match (language-specific installers such as Kaspersky).
+* Red Hat Enterprise Linux 10 and CentOS Stream 10 kits (workstation EN/PT, server EN) next to AlmaLinux; CentOS installs from the boot ISO over the network.
+* Windows Server kits for both Standard and Datacenter (Desktop Experience), per machine and BASE. Servers are English only.
 
 ### Fixed during validation
 
 * Ventoy menu showed only Linux entries: `VTOY_MENU_TIMEOUT=0` made Ventoy boot the first image immediately.
+* Windows Server keeps the stick disk offline: a first command brings disks online and mounts the Ventoy volume before the first-logon scan.
 * Windows Server: `AdministratorPassword` must be inside `UserAccounts`; the Ventoy volume gets a drive letter before the first-logon scan (Server does not auto-mount volumes).
 * FirstLogonCommands 259-character limit: the answer file now carries a tiny bootstrap; parameters live in `Scripts\kits.json`.
 * Template order is stable (BASE first, then machines in site order).

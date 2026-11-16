@@ -17,9 +17,13 @@ foreach ($k in Get-WindowsKits $site $cat) {
   # FirstLogonCommands accept at most ~259 characters: keep the command tiny and put every parameter in Scripts\kits.json (looked up by -K <id>).
   # It scans the drive letters (retrying ~6 min) for Scripts\FirstLogon.ps1 on the stick.
   $cmd = "powershell.exe -NoP -EP Bypass -C `"1..120|%{foreach(`$l in 67..90){`$p=[char]`$l+':\Scripts\FirstLogon.ps1';if(Test-Path `$p){& `$p -K $kitId;exit}};sleep 3}`""
-  # Windows Server does not auto-mount new volumes: give the Ventoy data partition a drive letter first.
-  if ($isServer) { $cmd = $cmd.Replace('-C "', '-C "Get-Volume -FileSystemLabel Ventoy|Get-Partition|Add-PartitionAccessPath -AssignDriveLetter;') }
-  if ($cmd.Length -gt 255) { throw "FirstLogon command too long ($($cmd.Length))" }
+  # Windows Server keeps the virtual/USB disk OFFLINE and does not auto-mount volumes: a first command brings disks online and gives the Ventoy partition a drive letter.
+  $pre = ''
+  if ($isServer) {
+    $pc = 'powershell.exe -NoP -EP Bypass -C "Get-Disk|?{$_.IsOffline}|Set-Disk -IsOffline $false;sleep 5;Get-Volume -FileSystemLabel Ventoy|Get-Partition|Add-PartitionAccessPath -AssignDriveLetter"'
+    $pre = "<SynchronousCommand wcm:action=`"add`"><Order>1</Order><Description>Mount install stick</Description><CommandLine>$(X $pc)</CommandLine></SynchronousCommand>`n        "
+  }
+  if ($cmd.Length -gt 250) { throw "FirstLogon command too long ($($cmd.Length))" }
   $account = if ($isServer) { "<UserAccounts><AdministratorPassword><Value>$(X $pw)</Value><PlainText>true</PlainText></AdministratorPassword></UserAccounts>" }
   else { "<UserAccounts><LocalAccounts><LocalAccount wcm:action=`"add`"><Name>$user</Name><Group>Administrators</Group><DisplayName>$user</DisplayName><Password><Value>$(X $pw)</Value><PlainText>true</PlainText></Password></LocalAccount></LocalAccounts></UserAccounts>" }
   $xml = @"
@@ -52,7 +56,7 @@ foreach ($k in Get-WindowsKits $site $cat) {
       $account
       <AutoLogon><Enabled>true</Enabled><LogonCount>1</LogonCount><Username>$user</Username><Password><Value>$(X $pw)</Value><PlainText>true</PlainText></Password></AutoLogon>
       <FirstLogonCommands>
-        <SynchronousCommand wcm:action="add"><Order>1</Order><Description>Quick-install post setup</Description><CommandLine>$(X $cmd)</CommandLine></SynchronousCommand>
+        $pre<SynchronousCommand wcm:action="add"><Order>$(if ($isServer) { 2 } else { 1 })</Order><Description>Quick-install post setup</Description><CommandLine>$(X $cmd)</CommandLine></SynchronousCommand>
       </FirstLogonCommands>
     </component>
   </settings>

@@ -56,7 +56,7 @@ Solid "$Out\slider_c.png" 8 8 '#6b6b6b' 255; Solid "$Out\slider_n.png" 8 2 '#6b6
 # ---- class icons (28x28 rounded tiles) ----
 $icons = [ordered]@{
   win10 = @('10', '#0066cc'); win11 = @('11', '#0e5fbf'); winsrv = @('S', '#1b3a6b'); winlite = @('L', '#3b7dd8')
-  ubuntu = @('U', '#e95420'); alma = @('A', '#0f6d9c'); suse = @('S', '#5fa31c')
+  ubuntu = @('U', '#e95420'); alma = @('A', '#0f6d9c'); rhel = @('RH', '#cc0000'); centos = @('C', '#262577'); suse = @('S', '#5fa31c')
   vtoydir = @('>', '#e95420'); vtoyiso = @('i', '#6b6b6b'); vtoyret = @('<', '#6b6b6b')
   pe = @('PE', '#1a9a2e'); rescue = @('R', '#c47f00'); memtest = @('M', '#a3121f'); tools = @('T', '#6b6b6b')
 }

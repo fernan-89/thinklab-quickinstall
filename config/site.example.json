@@ -16,14 +16,15 @@
       "windows": [
         { "os": "W10", "langs": [ "EN", "PT" ], "edition": "ProWS" },
         { "os": "W11", "langs": [ "EN", "PT" ], "edition": "ProWS" },
-        { "os": "S19", "langs": [ "EN" ], "profile": "Server", "profileFile": "Servidor", "role": "S" }
+        { "os": "S19", "langs": [ "EN" ], "edition": "Standard", "profile": "Server", "profileFile": "Servidor", "role": "S" },
+        { "os": "S19", "langs": [ "EN" ], "edition": "Datacenter", "profile": "Server", "profileFile": "Servidor", "role": "S" }
       ],
       "drivers": {
         "W10": [ "Drivers\\WS1\\Pack-W10" ],
         "W11": [ "Drivers\\WS1\\Pack-W10" ],
         "S19": [ "Drivers\\WS1\\Server2019" ]
       },
-      "linux": { "alma": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "ubuntu": { "server": [ "EN" ] } }
+      "linux": { "alma": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "rhel": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "centos": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "ubuntu": { "server": [ "EN" ] } }
     },
     {
       "code": "LT1", "nameCode": "LT1", "label": "LT1", "fullName": "Laptop 1 (developer)",
@@ -37,7 +38,7 @@
         "W10": [ "Drivers\\LT1\\Pack-W10" ],
         "W11": [ "pack:Drivers\\LT1\\Pack-W11\\vendor-pack.exe", "Drivers\\LT1\\Pack-W10" ]
       },
-      "linux": { "alma": { "desktop": [ "EN", "PT" ], "server": [] } }
+      "linux": { "alma": { "desktop": [ "EN", "PT" ], "server": [] }, "rhel": { "desktop": [ "EN", "PT" ], "server": [] }, "centos": { "desktop": [ "EN", "PT" ], "server": [] } }
     },
     {
       "code": "MINI1", "nameCode": "MN1", "label": "MINI1", "fullName": "Mini PC (office, 4 GB)",
@@ -49,7 +50,7 @@
         { "os": "L24", "langs": [ "PT" ] }
       ],
       "drivers": { "L21": [ "Drivers\\MINI1\\Pack" ], "I10": [ "Drivers\\MINI1\\Pack" ], "L24": [ "Drivers\\MINI1\\Pack" ] },
-      "linux": { "alma": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "ubuntu": { "server": [ "EN" ] } }
+      "linux": { "alma": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "rhel": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "centos": { "desktop": [ "EN", "PT" ], "server": [ "EN" ] }, "ubuntu": { "server": [ "EN" ] } }
     },
     {
       "code": "LT2", "nameCode": "LT2", "label": "LT2", "fullName": "Laptop 2 (office)",

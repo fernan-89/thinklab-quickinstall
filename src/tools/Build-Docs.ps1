@@ -122,7 +122,7 @@ function KitsTable($lang) {
     $t = Get-Content $f.FullName -Raw
     $hn = [regex]::Match($t, '--hostname=(\S+)').Groups[1].Value; if (-not $hn) { $hn = if ($lang -eq 'pt') { '(autom&aacute;tico)' } else { '(automatic)' } }; $lg = [regex]::Match($t, '(?m)^lang\s+(\S+)').Groups[1].Value
     $parts = $f.BaseName -split '_'
-    $rows += , @("<b>$hn</b>", (Enc $parts[0]), (Enc ('AlmaLinux 10.2 ' + $parts[2].Split('-')[-1])), (Enc $lg), 'kickstart')
+    $rows += , @("<b>$hn</b>", (Enc $parts[0]), (Enc ($parts[2] -replace '-', ' ')), (Enc $lg), 'kickstart')
   }
   foreach ($f in Get-ChildItem "$Stage\Unattend" -Filter *.yaml | Sort-Object Name) {
     $t = Get-Content $f.FullName -Raw; $hn = [regex]::Match($t, "echo '([^']+)'").Groups[1].Value; if (-not $hn) { $hn = if ($lang -eq 'pt') { '(autom&aacute;tico)' } else { '(automatic)' } }

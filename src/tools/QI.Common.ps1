@@ -48,15 +48,18 @@ function Get-WindowsKits($Site, $Catalog) {
     }
   }
   foreach ($cat in $Catalog.windows) {
-    $edKey = if ($cat.editions.PSObject.Properties.Name -contains 'Pro') { 'Pro' } else { 'Default' }; $ed = $cat.editions.$edKey
-    $loc = $script:Loc[$cat.lang]
-    $file = 'BASE_{0}_{1}' -f $loc.Tag, $cat.fileLabel
-    if (Get-Prop $ed 'fileLabel') { $file += '-' + $ed.fileLabel }
-    if ($cat.office) { $file += "_Office$($cat.office)" }
-    $file += '_Base.xml'
-    $profile = if ($cat.office) { 'Base' } else { 'Server' }
-    $kits += [pscustomobject]@{ File = $file; Name = '*'; Machine = 'BASE'; MachineLabel = 'BASE'; Os = $cat.os; Lang = $cat.lang; Iso = $cat.iso; Image = $ed.image; KeyId = $ed.key
-      Key = $Catalog.genericKeys.($ed.key); Profile = $profile; Drivers = @(); Office = $cat.office; Base = $true; FullName = ''; Wallpapers = @(); ExtraSoftware = @() }
+    $baseEds = @(Get-Prop $cat 'baseEditions'); if (-not $baseEds -or -not $baseEds[0]) { $baseEds = @(if ($cat.editions.PSObject.Properties.Name -contains 'Pro') { 'Pro' } else { 'Default' }) }
+    foreach ($edKey in $baseEds) {
+      $ed = $cat.editions.$edKey
+      $loc = $script:Loc[$cat.lang]
+      $file = 'BASE_{0}_{1}' -f $loc.Tag, $cat.fileLabel
+      if (Get-Prop $ed 'fileLabel') { $file += '-' + $ed.fileLabel }
+      if ($cat.office) { $file += "_Office$($cat.office)" }
+      $file += '_Base.xml'
+      $profile = if ($cat.office) { 'Base' } else { 'Server' }
+      $kits += [pscustomobject]@{ File = $file; Name = '*'; Machine = 'BASE'; MachineLabel = 'BASE'; Os = $cat.os; Lang = $cat.lang; Iso = $cat.iso; Image = $ed.image; KeyId = $ed.key
+        Key = $Catalog.genericKeys.($ed.key); Profile = $profile; Drivers = @(); Office = $cat.office; Base = $true; FullName = ''; Wallpapers = @(); ExtraSoftware = @() }
+    }
   }
   $kits
 }
@@ -72,7 +75,7 @@ function Get-LinuxKits($Site, $Catalog) {
       $cfg = Get-Prop (Get-Prop $m 'linux') $lx.id
       if ($cfg) { $entries += [pscustomobject]@{ Code = $m.code; NameCode = $m.nameCode.ToLower(); Label = $m.label; Cfg = $cfg; Base = $false } }
     }
-    $baseCfg = if ($lx.id -eq 'alma') { [pscustomobject]@{ desktop = @('EN', 'PT'); server = @('EN') } } else { [pscustomobject]@{ server = @('EN') } }
+    $baseCfg = if ($lx.templates -eq 'kickstart') { [pscustomobject]@{ desktop = @('EN', 'PT'); server = @('EN') } } else { [pscustomobject]@{ server = @('EN') } }
     $entries += [pscustomobject]@{ Code = 'BASE'; NameCode = 'base'; Label = 'BASE'; Cfg = $baseCfg; Base = $true }
     foreach ($e in $entries) {
       foreach ($kind in 'desktop', 'server') {
@@ -83,7 +86,7 @@ function Get-LinuxKits($Site, $Catalog) {
           $host_ = if ($e.Base) { '' } else { '{0}-{1}-{2}{3}-{4}' -f $prefix, $e.NameCode, $lx.hostCode, $loc.Letter, $k }
           if ($lx.templates -eq 'kickstart') { $role = if ($kind -eq 'desktop') { 'Workstation' } else { 'Server' }; $file = '{0}_{1}_{2}-{3}.ks' -f $e.Code, $loc.Tag, $lx.tag, $role }
           else { $file = '{0}_{1}_{2}_Servidor.yaml' -f $e.Code, $loc.Tag, $lx.tag }
-          $out += [pscustomobject]@{ File = $file; Distro = $lx.id; Iso = $lx.iso; Kind = $kind; Lang = $lang; Host = $host_; Machine = $e.Code; Tag = $lx.tag; Base = $e.Base }
+          $out += [pscustomobject]@{ File = $file; Distro = $lx.id; Iso = $lx.iso; Kind = $kind; Lang = $lang; Host = $host_; Machine = $e.Code; Tag = $lx.tag; Base = $e.Base; RepoUrl = (Get-Prop $lx 'repoUrl') }
         }
       }
     }

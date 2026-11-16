@@ -9,7 +9,7 @@ $f = $cat.folders
 $alias = @(); $auto = @(); $cls = @(); $inject = @()
 $dirs = [ordered]@{
   "/ISO/$($f.windows)"  = 'Windows - instalacao completa (kits por maquina)'
-  "/ISO/$($f.linux)"    = 'Linux - instalacao (Ubuntu, AlmaLinux, openSUSE)'
+  "/ISO/$($f.linux)"    = 'Linux - instalacao (Ubuntu, AlmaLinux, Red Hat, CentOS, openSUSE)'
   "/ISO/$($f.recovery)" = 'Recovery - Windows Live e resgate (Hiren''s PE, SystemRescue, GParted, Clonezilla, MemTest86+)'
 }
 foreach ($d in $dirs.Keys) { $alias += [ordered]@{ dir = $d; alias = $dirs[$d] } }

@@ -33,19 +33,20 @@ WantedBy=multi-user.target
 function B64($t) { $x = ($t.TrimEnd() + "`n") -replace "`r`n", "`n"; [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($x)) }
 foreach ($k in Get-LinuxKits $site $cat) {
   $l = $script:Loc[$k.Lang]
-  if ($k.Distro -eq 'alma') {
+  if ($k.Distro -in 'alma', 'rhel', 'centos') {
     $env = if ($k.Kind -eq 'desktop') { '@^workstation-product-environment' } else { '@^server-product-environment' }
     $role = if ($k.Kind -eq 'desktop') { 'Workstation' } else { 'Server' }
     $net = if ($k.Host) { "network --bootproto=dhcp --hostname=$($k.Host) --activate" } else { 'network --bootproto=dhcp --activate' }
     $hdr = if ($k.Host) { $k.Host } else { 'BASE' }
     $text = @"
-# $hdr | AlmaLinux 10.2 $role | $($k.Machine) | $($l.Tag)
+# $hdr | $($k.Tag -replace '-', ' ') $role | $($k.Machine) | $($l.Tag)
 # Disk (installation destination), root/user and anything not listed here are asked by the installer.
 eula --agreed
 lang $($l.LinuxLang)
 keyboard --vckeymap=$($l.Kbd) --xlayouts='$($l.Kbd)'
 timezone $tz --utc
 $net
+$(if ($k.RepoUrl) { "url --url=$($k.RepoUrl)/BaseOS/x86_64/os/`nrepo --name=AppStream --baseurl=$($k.RepoUrl)/AppStream/x86_64/os/" })
 firstboot --enable
 
 %packages
