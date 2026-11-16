@@ -72,12 +72,13 @@ function Get-LinuxKits($Site, $Catalog) {
       $cfg = Get-Prop (Get-Prop $m 'linux') $lx.id
       if ($cfg) { $entries += [pscustomobject]@{ Code = $m.code; NameCode = $m.nameCode.ToLower(); Label = $m.label; Cfg = $cfg; Base = $false } }
     }
-    $baseCfg = if ($lx.id -eq 'alma') { [pscustomobject]@{ desktop = @('EN', 'PT'); server = @('EN', 'PT') } } else { [pscustomobject]@{ server = @('EN') } }
+    $baseCfg = if ($lx.id -eq 'alma') { [pscustomobject]@{ desktop = @('EN', 'PT'); server = @('EN') } } else { [pscustomobject]@{ server = @('EN') } }
     $entries += [pscustomobject]@{ Code = 'BASE'; NameCode = 'base'; Label = 'BASE'; Cfg = $baseCfg; Base = $true }
     foreach ($e in $entries) {
       foreach ($kind in 'desktop', 'server') {
         foreach ($lang in @(Get-Prop $e.Cfg $kind)) {
           if (-not $lang) { continue }
+          if ($kind -eq 'server' -and $lang -ne 'EN') { Write-Warning "server kits are English only - ignoring $lang ($($e.Code))"; continue }   # policy: servers EN, workstations EN or PT
           $loc = $script:Loc[$lang]; $k = if ($kind -eq 'desktop') { 'd' } else { 's' }
           $host_ = if ($e.Base) { '' } else { '{0}-{1}-{2}{3}-{4}' -f $prefix, $e.NameCode, $lx.hostCode, $loc.Letter, $k }
           if ($lx.templates -eq 'kickstart') { $role = if ($kind -eq 'desktop') { 'Workstation' } else { 'Server' }; $file = '{0}_{1}_{2}-{3}.ks' -f $e.Code, $loc.Tag, $lx.tag, $role }
