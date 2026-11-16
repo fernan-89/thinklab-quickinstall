@@ -7,6 +7,30 @@ $site = Get-Site $SitePath; $cat = Get-Catalog
 $dir = Join-Path $Out 'Unattend'; New-Item -ItemType Directory -Force $dir | Out-Null
 $tz = 'America/Sao_Paulo'
 $n = 0
+
+# Netdata on every Linux SERVER kit: a one-shot unit runs the official kickstart once the network is up (retries), then disables itself.
+$ndScript = @'
+#!/bin/sh
+# ThinkLab Quick Install: install Netdata (stable) with the official kickstart script, once.
+for i in $(seq 1 30); do
+  curl -fsSL --max-time 60 https://get.netdata.cloud/kickstart.sh -o /tmp/netdata-kickstart.sh && break
+  sleep 20
+done
+[ -s /tmp/netdata-kickstart.sh ] && sh /tmp/netdata-kickstart.sh --non-interactive --stable-channel --disable-telemetry   && systemctl disable netdata-firstboot.service
+'@
+$ndUnit = @'
+[Unit]
+Description=Install Netdata (ThinkLab Quick Install)
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=oneshot
+TimeoutStartSec=3600
+ExecStart=/usr/local/sbin/netdata-firstboot.sh
+[Install]
+WantedBy=multi-user.target
+'@
+function B64($t) { $x = ($t.TrimEnd() + "`n") -replace "`r`n", "`n"; [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($x)) }
 foreach ($k in Get-LinuxKits $site $cat) {
   $l = $script:Loc[$k.Lang]
   if ($k.Distro -eq 'alma') {
@@ -31,10 +55,18 @@ curl
 vim-enhanced
 htop
 %end
+$(if ($k.Kind -eq 'server') { "`n%post --log=/root/ks-post-netdata.log`ncat > /usr/local/sbin/netdata-firstboot.sh <<'EOS'`n$($ndScript.TrimEnd())`nEOS`nchmod 755 /usr/local/sbin/netdata-firstboot.sh`ncat > /etc/systemd/system/netdata-firstboot.service <<'EOS'`n$($ndUnit.TrimEnd())`nEOS`nsystemctl enable netdata-firstboot.service`n%end" })
 "@
   }
   else {   # ubuntu autoinstall
-    $late = if ($k.Host) { "  late-commands:`n    - echo '$($k.Host)' > /target/etc/hostname`n" } else { '' }
+    $lc = @(); if ($k.Host) { $lc += "    - echo '$($k.Host)' > /target/etc/hostname" }
+    if ($k.Kind -eq 'server') {
+      $lc += "    - echo $(B64 $ndScript) | base64 -d > /target/usr/local/sbin/netdata-firstboot.sh"
+      $lc += "    - chmod 755 /target/usr/local/sbin/netdata-firstboot.sh"
+      $lc += "    - echo $(B64 $ndUnit) | base64 -d > /target/etc/systemd/system/netdata-firstboot.service"
+      $lc += "    - curtin in-target --target=/target -- systemctl enable netdata-firstboot.service"
+    }
+    $late = if ($lc.Count) { "  late-commands:`n" + ($lc -join "`n") + "`n" } else { '' }
     $text = @"
 #cloud-config
 # $(if ($k.Host) { $k.Host } else { 'BASE' }) | Ubuntu Server 26.04.1 LTS | $($k.Machine) | English

@@ -17,8 +17,10 @@ foreach ($k in Get-WindowsKits $site $cat) {
   # FirstLogonCommands accept at most ~259 characters: keep the command tiny and put every parameter in Scripts\kits.json (looked up by -K <id>).
   # It scans the drive letters (retrying ~6 min) for Scripts\FirstLogon.ps1 on the stick.
   $cmd = "powershell.exe -NoP -EP Bypass -C `"1..120|%{foreach(`$l in 67..90){`$p=[char]`$l+':\Scripts\FirstLogon.ps1';if(Test-Path `$p){& `$p -K $kitId;exit}};sleep 3}`""
-  if ($cmd.Length -gt 250) { throw "FirstLogon command too long ($($cmd.Length))" }
-  $account = if ($isServer) { "<AdministratorPassword><Value>$(X $pw)</Value><PlainText>true</PlainText></AdministratorPassword>" }
+  # Windows Server does not auto-mount new volumes: give the Ventoy data partition a drive letter first.
+  if ($isServer) { $cmd = $cmd.Replace('-C "', '-C "Get-Volume -FileSystemLabel Ventoy|Get-Partition|Add-PartitionAccessPath -AssignDriveLetter;') }
+  if ($cmd.Length -gt 255) { throw "FirstLogon command too long ($($cmd.Length))" }
+  $account = if ($isServer) { "<UserAccounts><AdministratorPassword><Value>$(X $pw)</Value><PlainText>true</PlainText></AdministratorPassword></UserAccounts>" }
   else { "<UserAccounts><LocalAccounts><LocalAccount wcm:action=`"add`"><Name>$user</Name><Group>Administrators</Group><DisplayName>$user</DisplayName><Password><Value>$(X $pw)</Value><PlainText>true</PlainText></Password></LocalAccount></LocalAccounts></UserAccounts>" }
   $xml = @"
 <?xml version="1.0" encoding="utf-8"?>

@@ -105,7 +105,9 @@ function Install-Item($it) {
   $file = $null
   if ($sw -and $it.PSObject.Properties.Name -contains 'filter') {
     $pattern = $it.filter.Replace('{LANGTAG}', $LangTag)
-    $file = Get-ChildItem -Path (Join-Path $sw $pattern) -ErrorAction SilentlyContinue | Select-Object -First 1
+    # newest version wins (names sort by version); fall back to a language-neutral '_Multi' installer
+    $file = Get-ChildItem -Path (Join-Path $sw $pattern) -ErrorAction SilentlyContinue | Sort-Object Name -Descending | Select-Object -First 1
+    if (-not $file -and $it.filter -like '*{LANGTAG}*') { $file = Get-ChildItem -Path (Join-Path $sw $it.filter.Replace('{LANGTAG}', 'Multi')) -ErrorAction SilentlyContinue | Sort-Object Name -Descending | Select-Object -First 1 }
   }
   if (-not $file) { if ($wg) { [void](Winget $wg $loc) } else { Write-Warning "no installer for $($it.name)" }; return }
   $kind = if ($it.PSObject.Properties.Name -contains 'kind') { $it.kind } else { 'exe' }
