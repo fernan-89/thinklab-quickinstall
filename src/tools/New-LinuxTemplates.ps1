@@ -12,11 +12,17 @@ $n = 0
 $ndScript = @'
 #!/bin/sh
 # ThinkLab Quick Install: install Netdata (stable) with the official kickstart script, once.
+# systemd gives units no HOME; the official script needs one (it failed at "cd $HOME" without it)
+export HOME=/root
 for i in $(seq 1 30); do
   curl -fsSL --max-time 60 https://get.netdata.cloud/kickstart.sh -o /tmp/netdata-kickstart.sh && break
   sleep 20
 done
-[ -s /tmp/netdata-kickstart.sh ] && sh /tmp/netdata-kickstart.sh --non-interactive --stable-channel --disable-telemetry   && systemctl disable netdata-firstboot.service
+[ -s /tmp/netdata-kickstart.sh ] && sh /tmp/netdata-kickstart.sh --non-interactive --stable-channel --disable-telemetry
+# the script may leave the service enabled but stopped: start it, and retire this unit only once Netdata is really running
+systemctl enable --now netdata 2>/dev/null
+sleep 5
+systemctl is-active --quiet netdata && systemctl disable netdata-firstboot.service
 '@
 $ndUnit = @'
 [Unit]
@@ -25,6 +31,7 @@ After=network-online.target
 Wants=network-online.target
 [Service]
 Type=oneshot
+Environment=HOME=/root
 TimeoutStartSec=3600
 ExecStart=/usr/local/sbin/netdata-firstboot.sh
 [Install]

@@ -43,6 +43,8 @@ Copy-Item config\site.example.json config\site.json     # edit it: prefix, user,
 # 4. fetch the recovery ISOs (checksums are verified) and write the manifest
 .\src\tools\Get-RescueIsos.ps1 -Library D:\library
 .\src\tools\New-Manifest.ps1 -Stick E:
+# after a later publish: re-hash the small files only and keep the recorded hashes of the big ones
+.\src\tools\New-Manifest.ps1 -Stick E: -Update
 ```
 
 `-Library` layout: `iso\**` (exact file names from `config/catalog.json`), `office\{_ODT\setup.exe, pt-BR\Office-Retail-CurrentChannel_*}`,

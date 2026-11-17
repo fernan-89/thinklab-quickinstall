@@ -96,6 +96,15 @@ if ($prof.office -and $OS -ne 'S19' -and $Root) {
 
 # ---- 3. software (profile list) ----
 $sw = if ($Root) { Join-Path $Root 'Software' } else { $null }
+function Test-Installed([string]$Name, [int]$Tries = 9) {   # waits up to Tries x 10 s for an Uninstall entry whose DisplayName matches
+  for ($i = 0; $i -lt $Tries; $i++) {
+    foreach ($k in 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*', 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*') {
+      if (Get-ItemProperty $k -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like $Name }) { return $true }
+    }
+    Start-Sleep 10
+  }
+  return $false
+}
 function Install-Item($it) {
   Write-Host "-- $($it.name)"
   if ($it.PSObject.Properties.Name -contains 'onlyWithoutWinget' -and $it.onlyWithoutWinget -and $HasWinget) { return }
@@ -129,7 +138,25 @@ function Install-Item($it) {
         Write-Host "extracted to $dst"
       } catch { Write-Warning $_.Exception.Message; if ($wg) { [void](Winget $wg $null) } }
     }
-    default { $nw = ($it.PSObject.Properties.Name -contains 'noWait' -and $it.noWait); $kl = ($it.PSObject.Properties.Name -contains 'killOnTimeout' -and $it.killOnTimeout); [void](Run $file.FullName $args_ $min -NoWait:$nw -Kill:$kl) }
+    default {
+      $nw = ($it.PSObject.Properties.Name -contains 'noWait' -and $it.noWait); $kl = ($it.PSObject.Properties.Name -contains 'killOnTimeout' -and $it.killOnTimeout)
+      [void](Run $file.FullName $args_ $min -NoWait:$nw -Kill:$kl)
+      # some web installers return 0 without installing anything: when software.json names the Uninstall entry to expect
+      # ("verifyName"), check it and retry with the alternative switches ("argsFallback"; {LANGCODE} / {LCID} = installer language)
+      if ($it.PSObject.Properties.Name -contains 'verifyName') {
+        $lc = if ($Lang -eq 'PT') { 'pt-BR' } else { 'en' }; $lcid = if ($Lang -eq 'PT') { 1046 } else { 1033 }
+        $ok = Test-Installed $it.verifyName 3
+        if (-not $ok -and $it.PSObject.Properties.Name -contains 'argsFallback') {
+          foreach ($fb in @($it.argsFallback)) {
+            if ($ok) { break }
+            $a2 = $fb.Replace('{LANGCODE}', $lc).Replace('{LCID}', "$lcid"); Write-Host "not installed yet, retry with: $a2"
+            [void](Run $file.FullName $a2 $min -NoWait:$nw -Kill:$kl); $ok = Test-Installed $it.verifyName 4
+            if ($ok) { Write-Host "worked: $a2" }
+          }
+        }
+        if ($ok) { Write-Host "verified: $($it.verifyName)" } else { Write-Warning "$($it.name) did not install (no '$($it.verifyName)' in Programs and Features)" }
+      }
+    }
   }
   if ($it.PSObject.Properties.Name -contains 'copyAfter') {
     $to = [Environment]::ExpandEnvironmentVariables($it.copyAfter.to); New-Item -ItemType Directory -Force $to | Out-Null

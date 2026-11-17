@@ -52,6 +52,7 @@ Run every row after a change that touches it; record the result (date, pass/fail
 | L5 | RHEL (ISO supplied by you) | workstation / server | same as L2 / L3 |
 | L6 | openSUSE Leap | interactive | installer starts |
 | R1-R5 | Recovery ISOs | WinPE, SystemRescue, GParted, Clonezilla, MemTest86+ | each boots to its desktop / menu; PE extras present in WinPE |
+| P1 | Phone wallpapers | `Build-PhoneWallpapers.ps1` | 16 PNGs (8 looks x 2 sizes), labels readable |
 | K1 | Linux templates (static) | `ksvalidator -v RHEL10` (pykickstart) on every `.ks`, `bash -n` on its `%pre`, YAML parse of every autoinstall file | no errors, LF line endings |
 | I1 | Integrity | `New-Manifest.ps1` then `Verify-Stick.ps1` | no mismatch |
 | D1 | Repository | `tests\Test-Repo.ps1` | all checks pass |

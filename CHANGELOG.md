@@ -8,6 +8,11 @@
 * Windows Terminal: framework dependencies (VCLibs Desktop, UI.Xaml 2.8) installed with the bundle on Windows 10.
 * Kaspersky Password Manager: documented silent-install switches.
 * Test plan matrix in `docs/TESTING.md`.
+* Netdata first-boot unit on Linux servers: sets `HOME`, starts the service explicitly and retires itself only once Netdata is active (it used to stay enabled but stopped on AlmaLinux/RHEL/CentOS).
+* `FirstLogon.ps1`: optional `verifyName` / `argsFallback` per software item (checks Programs and Features, retries with alternative switches, logs a warning).
+* Known limitation: the Kaspersky Password Manager web installer ends silent mode with "Can't select language in silent mode" and installs nothing; the kit logs a warning and the product is installed by hand.
+* `New-Manifest.ps1 -Update` keeps recorded hashes of big files.
+* `Build-PhoneWallpapers.ps1`: portrait wallpapers for a smartphone (exploded Dark / Light / XRay / Sunset and four tape looks, 1080x2400 and 1440x3200).
 * `Publish-Stick.ps1` without `-Build` now finds `build/USB` (the default used to resolve to the drive root).
 * Docs: the BASE kit of a server is the system plus Netdata.
 
