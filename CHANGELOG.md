@@ -11,6 +11,7 @@
 * Netdata first-boot unit on Linux servers: sets `HOME`, starts the service explicitly and retires itself only once Netdata is active (it used to stay enabled but stopped on AlmaLinux/RHEL/CentOS).
 * `FirstLogon.ps1`: optional `verifyName` / `argsFallback` per software item (checks Programs and Features, retries with alternative switches, logs a warning).
 * Known limitation: the Kaspersky Password Manager web installer ends silent mode with "Can't select language in silent mode" and installs nothing; the kit logs a warning and the product is installed by hand.
+* Roadmap to finish the project: docs/ROADMAP.md.
 * Lite editions (LTSC 2021 EN, LTSC 2024 EN, IoT PT) stay optional catalog entries: they appear in the menu only when you add the ISO.
 * `New-Manifest.ps1 -Update` keeps recorded hashes of big files.
 * `Build-PhoneWallpapers.ps1`: portrait wallpapers for a smartphone (exploded Dark / Light / XRay / Sunset and four tape looks, 1080x2400 and 1440x3200).
