@@ -42,7 +42,7 @@ Run every row after a change that touches it; record the result (date, pass/fail
 | W1 | Windows 10, machine kit, PT-BR | office-type profile + extra software | log ends with `Done`; drivers, Office in PT only, profile software, extra software, OEM info, tape wallpaper |
 | W2 | Windows 11, BASE kit, EN-US | system + Office only | log ends with `Done`; no drivers/software; BASE wallpapers; automatic computer name |
 | W3 | Windows 11, machine kit, EN-US | developer profile, driver pack | log ends with `Done`; pack extracted, dev tools present |
-| W4 | Lite editions (LTSC / IoT), both languages | machine kit | Setup picks the image; log ends with `Done` |
+| W4 | Lite editions (LTSC / IoT) with the ISOs you have | machine kit | Setup picks the image; log ends with `Done`. Entries marked `supply` in the catalog stay optional: no ISO, no menu entry |
 | S1 | Windows Server, Standard | server profile | stick mounted by the first command; Netdata installed |
 | S2 | Windows Server, Datacenter | server profile | same as S1, Datacenter edition |
 | L1 | Ubuntu Server autoinstall | server | interactive sections asked; Netdata unit enabled and service up after first boot |
